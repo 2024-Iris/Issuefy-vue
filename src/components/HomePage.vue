@@ -1,6 +1,12 @@
 <script setup>
 import store from "@/store";
-const isLogin = store.getters.isLoggedIn
+import { ref, watchEffect } from "vue";
+
+const isLogin = ref(false);
+
+watchEffect(() => {
+  isLogin.value = store.getters.isLoggedIn;
+});
 </script>
 
 <template>
