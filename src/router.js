@@ -3,6 +3,7 @@ import TestCp from "@/components/TestCp.vue";
 import HomePage from "@/components/HomePage.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import Store from "@/store/index"
+import GithubAuth from "@/components/GithubAuth.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -20,6 +21,14 @@ const router = createRouter({
             path: '/login',
             component: LoginPage,
             meta: {hideHeader: true}
+        },
+        {
+            path: '/callback',
+            component: GithubAuth
+        },
+        {
+            path: '/:catchAll(.*)',
+            component: HomePage
         }
     ],
 });
