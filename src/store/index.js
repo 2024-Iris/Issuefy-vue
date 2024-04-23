@@ -3,7 +3,7 @@ import { createStore } from 'vuex';
 export default createStore({
   state: {
     // 사용자 정보를 저장하는 객체
-    user: 'roy'
+    user: null
   },
   getters: {
     // 사용자 로그인 상태를 반환하는 getter
