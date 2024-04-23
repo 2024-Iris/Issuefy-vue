@@ -37,16 +37,16 @@
                                aria-hidden="true"/>
                   </div>
                   <div class="flex-auto">
-                    <a :href="item.href" class="block font-semibold text-gray-900">
-                      {{ item.name }}
-                      <span class="absolute inset-0"/>
-                    </a>
+<!--                    <a :href="" class="block font-semibold text-gray-900">-->
+<!--                      {{ item.name }}-->
+<!--                      <span class="absolute inset-0"/>-->
+<!--                    </a>-->
                     <p class="mt-1 text-gray-600">{{ item.description }}</p>
                   </div>
                 </div>
               </div>
               <div class="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-                <a v-for="item in callsToAction" :key="item.name" :href="item.href"
+                <a v-for="item in callsToAction" :key="item.name"
                    class="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100">
                   <component :is="item.icon" class="h-5 w-5 flex-none text-gray-400" aria-hidden="true"/>
                   {{ item.name }}
@@ -91,7 +91,7 @@
                 </DisclosureButton>
                 <DisclosurePanel class="mt-2 space-y-2">
                   <DisclosureButton v-for="item in [...products, ...callsToAction]" :key="item.name" as="a"
-                                    :href="item.href"
+
                                     class="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                     {{ item.name }}
                   </DisclosureButton>
