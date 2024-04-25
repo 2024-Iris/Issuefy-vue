@@ -13,13 +13,13 @@ function handleGitHubLogin() {
   <div class="flex h-screen flex-col items-center justify-between space-y-4">
     <div class="flex flex-col items-center space-y-0 p-6 rounded-lg">
       <div>
-        <img src="../assets/issuefy_logo.png" alt="main.logo" class="h-96 w-auto">
+        <img alt="main.logo" class="h-96 w-auto" src="../assets/issuefy_logo.png">
       </div>
       <div>
         <button
             class="rounded-lg bg-purple-500 px-4 py-3 text-white hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-300"
             @click="handleGitHubLogin">
-          <font-awesome-icon :icon="['fab', 'github']" />
+          <font-awesome-icon :icon="['fab', 'github']"/>
           GitHub Login
         </button>
       </div>

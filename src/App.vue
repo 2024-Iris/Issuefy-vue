@@ -1,26 +1,26 @@
 <template>
   <header v-if="!$route.meta.hideHeader" class="bg-white">
-    <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
       <div class="flex lg:flex-1">
-        <a href="#" class="-m-1.5 p-1.5">
+        <a class="-m-1.5 p-1.5" href="#">
           <router-link to="/">
             <span class="sr-only">issuefy</span>
-            <img class="h-14 w-auto" src="./assets/issuefy_logo.png" alt=""/>
+            <img alt="" class="h-14 w-auto" src="./assets/issuefy_logo.png"/>
           </router-link>
         </a>
       </div>
       <div class="flex lg:hidden">
-        <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+        <button class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" type="button"
                 @click="mobileMenuOpen = true">
           <span class="sr-only">Open main menu</span>
-          <Bars3Icon class="h-6 w-6" aria-hidden="true"/>
+          <Bars3Icon aria-hidden="true" class="h-6 w-6"/>
         </button>
       </div>
       <PopoverGroup class="hidden lg:flex lg:gap-x-12">
         <Popover class="relative">
           <PopoverButton class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
             리포지토리
-            <ChevronDownIcon class="h-5 w-5 flex-none text-gray-400" aria-hidden="true"/>
+            <ChevronDownIcon aria-hidden="true" class="h-5 w-5 flex-none text-gray-400"/>
           </PopoverButton>
 
           <transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-y-1"
@@ -33,14 +33,14 @@
                      class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
                   <div
                       class="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-                    <component :is="item.icon" class="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
-                               aria-hidden="true"/>
+                    <component :is="item.icon" aria-hidden="true"
+                               class="h-6 w-6 text-gray-600 group-hover:text-indigo-600"/>
                   </div>
                   <div class="flex-auto">
-<!--                    <a :href="" class="block font-semibold text-gray-900">-->
-<!--                      {{ item.name }}-->
-<!--                      <span class="absolute inset-0"/>-->
-<!--                    </a>-->
+                    <!--                    <a :href="" class="block font-semibold text-gray-900">-->
+                    <!--                      {{ item.name }}-->
+                    <!--                      <span class="absolute inset-0"/>-->
+                    <!--                    </a>-->
                     <p class="mt-1 text-gray-600">{{ item.description }}</p>
                   </div>
                 </div>
@@ -48,7 +48,7 @@
               <div class="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
                 <a v-for="item in callsToAction" :key="item.name"
                    class="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100">
-                  <component :is="item.icon" class="h-5 w-5 flex-none text-gray-400" aria-hidden="true"/>
+                  <component :is="item.icon" aria-hidden="true" class="h-5 w-5 flex-none text-gray-400"/>
                   {{ item.name }}
                 </a>
               </div>
@@ -56,34 +56,34 @@
           </transition>
         </Popover>
 
-        <a href="#" class="text-sm font-semibold leading-6 text-gray-900">홈</a>
+        <a class="text-sm font-semibold leading-6 text-gray-900" href="#">홈</a>
         <!--        <a href="#" class="text-sm font-semibold leading-6 text-gray-900">검색</a>-->
-        <router-link to="/testcp" class="text-sm font-semibold leading-6 text-gray-900">라우팅 테스트</router-link>
-        <a href="#" class="text-sm font-semibold leading-6 text-gray-900">마이페이지</a>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/testcp">라우팅 테스트</router-link>
+        <a class="text-sm font-semibold leading-6 text-gray-900" href="#">마이페이지</a>
       </PopoverGroup>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
         <!--        <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>-->
-        <router-link to="/login" class="text-sm font-semibold leading-6 text-gray-900">로그인</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/login">로그인</router-link>
       </div>
     </nav>
-    <Dialog as="div" class="lg:hidden" @close="mobileMenuOpen = false" :open="mobileMenuOpen">
+    <Dialog :open="mobileMenuOpen" as="div" class="lg:hidden" @close="mobileMenuOpen = false">
       <div class="fixed inset-0 z-10"/>
       <DialogPanel
           class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
         <div class="flex items-center justify-between">
-          <a href="#" class="-m-1.5 p-1.5">
+          <a class="-m-1.5 p-1.5" href="#">
             <span class="sr-only">Your Company</span>
-            <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt=""/>
+            <img alt="" class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"/>
           </a>
-          <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" @click="mobileMenuOpen = false">
+          <button class="-m-2.5 rounded-md p-2.5 text-gray-700" type="button" @click="mobileMenuOpen = false">
             <span class="sr-only">Close menu</span>
-            <XMarkIcon class="h-6 w-6" aria-hidden="true"/>
+            <XMarkIcon aria-hidden="true" class="h-6 w-6"/>
           </button>
         </div>
         <div class="mt-6 flow-root">
           <div class="-my-6 divide-y divide-gray-500/10">
             <div class="space-y-2 py-6">
-              <Disclosure as="div" class="-mx-3" v-slot="{ open }">
+              <Disclosure v-slot="{ open }" as="div" class="-mx-3">
                 <DisclosureButton
                     class="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                   Product
@@ -97,16 +97,16 @@
                   </DisclosureButton>
                 </DisclosurePanel>
               </Disclosure>
-              <a href="#"
-                 class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Features</a>
-              <a href="#"
-                 class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Marketplace</a>
-              <a href="#"
-                 class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Company</a>
+              <a class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                 href="#">Features</a>
+              <a class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                 href="#">Marketplace</a>
+              <a class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                 href="#">Company</a>
             </div>
             <div class="py-6">
-              <a href="#"
-                 class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log
+              <a class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                 href="#">Log
                 in</a>
             </div>
           </div>

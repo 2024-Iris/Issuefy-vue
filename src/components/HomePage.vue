@@ -1,6 +1,6 @@
 <script setup>
 import store from "@/store";
-import { ref, watchEffect } from "vue";
+import {ref, watchEffect} from "vue";
 
 const isLogin = ref(false);
 
