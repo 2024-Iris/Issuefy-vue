@@ -13,7 +13,7 @@ env:
   CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   deploy:
