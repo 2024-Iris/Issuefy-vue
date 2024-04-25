@@ -2,6 +2,7 @@ import {createStore} from 'vuex';
 
 export default createStore({
     state: {
+        // 삭제 예정
         // 사용자 정보를 저장하는 객체
         user: null
     },
