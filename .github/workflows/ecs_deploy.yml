@@ -41,7 +41,7 @@ jobs:
             echo "Error: SEMANTIC_VERSION not extracted" && exit 1
           fi
         env:
-          GH_TOKEN: ${{ secrets.GH_ISSUEFY_ROY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_ISSUEFY_ROY_TOKEN }}
 
       - name: Install dependencies
         run: npm install
