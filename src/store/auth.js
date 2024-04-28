@@ -5,6 +5,9 @@ export const useAuthStore = defineStore('auth', {
     accessToken: null,
     user: null
   }),
+  getters: {
+        isLoggedIn: state => state.user !== null
+  },
   actions: {
     setCredentials(accessToken, user) {
       this.accessToken = accessToken;
