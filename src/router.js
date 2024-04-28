@@ -2,8 +2,10 @@ import {createRouter, createWebHistory} from 'vue-router';
 import TestCp from "@/components/TestCp.vue";
 import HomePage from "@/components/HomePage.vue";
 import LoginPage from "@/components/LoginPage.vue";
-import Store from "@/store/index"
 import GithubAuth from "@/components/GithubAuth.vue";
+import {ref} from "vue";
+import {useAuthStore} from "@/store/auth";
+import LogoutPage from "@/components/LogoutPage.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -23,6 +25,11 @@ const router = createRouter({
             meta: {hideHeader: true}
         },
         {
+            path: '/logout',
+            component: LogoutPage,
+            meta: {hideHeader: true}
+        },
+        {
             path: '/callback',
             component: GithubAuth
         },
@@ -34,10 +41,13 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    // 이동하려는 라우트에 대해 'requiresAuth' 메타가 있는지 확인
+    const authStore = useAuthStore()
+    const isLogin = ref(authStore.isLoggedIn)
+
+    console.log('로그인 상태 : ' + isLogin.value)
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        // Vuex 스토어에서 로그인 상태 확인
-        if (!Store.getters.isLoggedIn) {
+        // pinia 스토어에서 로그인 상태 확인
+        if (!isLogin.value) {
             // 로그인되지 않았다면 로그인 페이지로 리다이렉트
             next('/login');
         } else {
