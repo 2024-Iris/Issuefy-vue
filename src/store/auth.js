@@ -1,21 +1,21 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 
 export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    accessToken: null,
-    user: null
-  }),
-  getters: {
+    state: () => ({
+        accessToken: null,
+        user: null
+    }),
+    getters: {
         isLoggedIn: state => state.user !== null
-  },
-  actions: {
-    setCredentials(accessToken, user) {
-      this.accessToken = accessToken;
-      this.user = user;
     },
-    clearCredentials() {
-      this.accessToken = null;
-      this.user = null;
+    actions: {
+        setCredentials(accessToken, user) {
+            this.accessToken = accessToken;
+            this.user = user;
+        },
+        clearCredentials() {
+            this.accessToken = null;
+            this.user = null;
+        }
     }
-  }
 });

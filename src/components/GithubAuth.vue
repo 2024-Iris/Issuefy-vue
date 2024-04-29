@@ -31,7 +31,7 @@ onMounted(() => {
   <div class="flex h-screen flex-col items-center justify-start space-y-4">
     <h1>깃허브 로그인</h1>
     <p>AuthorizationCode : {{ authorizationCode }}</p>
-    <p>이름 : {{userName}} </p>
+    <p>이름 : {{ userName }} </p>
   </div>
 </template>
 

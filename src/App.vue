@@ -46,7 +46,6 @@
             </PopoverPanel>
           </transition>
         </Popover>
-
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/">Home</router-link>
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/repositories">Repositories</router-link>
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/settings">Settings</router-link>

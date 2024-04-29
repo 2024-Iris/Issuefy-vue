@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<h1>홈 페이지</h1>
+  <h1>홈 페이지</h1>
 </template>
 
 <style scoped>

@@ -11,6 +11,6 @@ router.push('/login')
 </script>
 
 <template>
-<p></p>
+  <p></p>
 </template>
 
