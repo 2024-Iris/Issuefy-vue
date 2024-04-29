@@ -63,7 +63,7 @@
       </PopoverGroup>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
         <!--        <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>-->
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/login">로그인</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">로그아웃</router-link>
       </div>
     </nav>
     <Dialog :open="mobileMenuOpen" as="div" class="lg:hidden" @close="mobileMenuOpen = false">
