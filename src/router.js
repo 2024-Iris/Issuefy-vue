@@ -1,11 +1,13 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import TestCp from "@/components/TestCp.vue";
-import HomePage from "@/components/HomePage.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import GithubAuth from "@/components/GithubAuth.vue";
 import {ref} from "vue";
 import {useAuthStore} from "@/store/auth";
 import LogoutPage from "@/components/LogoutPage.vue";
+import RepositoryPage from "@/components/RepositoryPage.vue";
+import NotFoundPage from "@/components/NotFoundPage.vue"
+import HomePage from "@/components/HomePage.vue";
+import SettingPage from "@/components/SettingPage.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -16,8 +18,14 @@ const router = createRouter({
             meta: {requiresAuth: true}
         },
         {
-            path: '/testcp',
-            component: TestCp
+            path: '/repositories',
+            component: RepositoryPage,
+            meta: {requiresAuth: true}
+        },
+        {
+            path: '/settings',
+            component: SettingPage,
+            meta: {requiresAuth: true}
         },
         {
             path: '/login',
@@ -34,8 +42,8 @@ const router = createRouter({
             component: GithubAuth
         },
         {
-            path: '/:catchAll(.*)',
-            component: HomePage
+            path: '/:pathMatch(.*)*',
+            component: NotFoundPage
         }
     ],
 });
