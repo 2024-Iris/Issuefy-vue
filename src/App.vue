@@ -18,11 +18,6 @@
       </div>
       <PopoverGroup class="hidden lg:flex lg:gap-x-12">
         <Popover class="relative">
-          <PopoverButton class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
-            리포지토리
-            <ChevronDownIcon aria-hidden="true" class="h-5 w-5 flex-none text-gray-400"/>
-          </PopoverButton>
-
           <transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-y-1"
                       enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150"
                       leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
@@ -37,10 +32,6 @@
                                class="h-6 w-6 text-gray-600 group-hover:text-indigo-600"/>
                   </div>
                   <div class="flex-auto">
-                    <!--                    <a :href="" class="block font-semibold text-gray-900">-->
-                    <!--                      {{ item.name }}-->
-                    <!--                      <span class="absolute inset-0"/>-->
-                    <!--                    </a>-->
                     <p class="mt-1 text-gray-600">{{ item.description }}</p>
                   </div>
                 </div>
@@ -56,14 +47,12 @@
           </transition>
         </Popover>
 
-        <a class="text-sm font-semibold leading-6 text-gray-900" href="#">홈</a>
-        <!--        <a href="#" class="text-sm font-semibold leading-6 text-gray-900">검색</a>-->
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/testcp">라우팅 테스트</router-link>
-        <a class="text-sm font-semibold leading-6 text-gray-900" href="#">마이페이지</a>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/">Home</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/repositories">Repositories</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/settings">Settings</router-link>
       </PopoverGroup>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-        <!--        <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>-->
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">로그아웃</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Log out</router-link>
       </div>
     </nav>
     <Dialog :open="mobileMenuOpen" as="div" class="lg:hidden" @close="mobileMenuOpen = false">
@@ -126,7 +115,6 @@ import {
   DisclosureButton,
   DisclosurePanel,
   Popover,
-  PopoverButton,
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/vue'
