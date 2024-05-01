@@ -51,7 +51,9 @@
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/settings">Settings</router-link>
       </PopoverGroup>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-        <p class="text-sm font-semibold leading-6 text-gray-900">Logged in as: {{ userName }}</p>
+        <p class="text-mg font-semibold leading-6 text-blue-800">
+          Hi! {{ userName }}
+        </p>
       </div>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Log out</router-link>
@@ -145,7 +147,7 @@ const callsToAction = [
 ]
 
 const authStore = useAuthStore()
-const userName = authStore.userName
+const userName = ref(authStore.userName)
 
 const mobileMenuOpen = ref(false)
 </script>
