@@ -51,6 +51,9 @@
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/settings">Settings</router-link>
       </PopoverGroup>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+        <p class="text-sm font-semibold leading-6 text-gray-900">Logged in as: {{ userName }}</p>
+      </div>
+      <div class="hidden lg:flex lg:flex-1 lg:justify-end">
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Log out</router-link>
       </div>
     </nav>
@@ -127,6 +130,7 @@ import {
   XMarkIcon,
 } from '@heroicons/vue/24/outline'
 import {ChevronDownIcon, PhoneIcon, PlayCircleIcon} from '@heroicons/vue/20/solid'
+import {useAuthStore} from "@/store/auth";
 
 const products = [
   {name: 'Analytics', description: 'Get a better understanding of your traffic', href: '#', icon: ChartPieIcon},
@@ -139,6 +143,9 @@ const callsToAction = [
   {name: 'Watch demo', href: '#', icon: PlayCircleIcon},
   {name: 'Contact sales', href: '#', icon: PhoneIcon},
 ]
+
+const authStore = useAuthStore()
+const userName = authStore.userName
 
 const mobileMenuOpen = ref(false)
 </script>
