@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/store/auth';
 import axios from 'axios';
@@ -8,18 +8,17 @@ const router = useRouter();
 const route = useRoute();
 const authorizationCode = route.query.code;
 const authStore = useAuthStore();
-const userName = computed(() => authStore.userName); // computed를 사용하여 반응형으로 처리
+const userName = computed(() => authStore.userName);
 
 async function fetchJWT(code) {
   try {
     const response = await axios.get('http://localhost:8080/api/login', {
-      params: { code: code }
+      params: { code }
     });
-    const JWT = response.data.jwt;
-    const userName = response.data.userName;
-    return {JWT, userName};
+    const { jwt, userName } = response.data;
+    return { jwt, userName };
   } catch (error) {
-    console.error('Error fetching access token:', error);
+    console.error('접근 토큰 가져오기 에러:', error);
     return null;
   }
 }
@@ -27,16 +26,17 @@ async function fetchJWT(code) {
 onMounted(async () => {
   const error = route.query.error;
   if (error) {
-    console.log('Login error:', error);
+    console.log('로그인 에러:', error);
     await router.push('/login');
   } else if (authorizationCode) {
-    const { JWT, userName: fetchedUserName } = await fetchJWT(authorizationCode);
-    if (JWT && fetchedUserName) {
-      authStore.setCredentials(JWT, {name: fetchedUserName});
-      console.log('Login successful, redirecting...');
+    const { jwt, userName } = await fetchJWT(authorizationCode);
+    if (jwt && userName) {
+      authStore.setCredentials(jwt, userName);
+      await nextTick(); // UI 업데이트가 반영되도록 강제 적용
+      console.log('로그인 성공, 사용자 이름:', userName);
       await router.push('/');
     } else {
-      console.log('No JWT or username received, redirecting to login');
+      console.log('JWT 또는 사용자 이름을 받지 못함, 로그인 페이지로 리디렉션');
       await router.push('/login');
     }
   }

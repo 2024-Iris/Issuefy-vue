@@ -1,22 +1,25 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 
 export const useAuthStore = defineStore('auth', {
-    state: () => ({
-        accessToken: null,
-        user: null
-    }),
-    getters: {
-        isLoggedIn: state => state.user !== null,
-        userName: state => state.user ? state.user.name : null
+  state: () => ({
+    JWT: null,
+    userName: null
+  }),
+  getters: {
+    isLoggedIn: (state) => !!state.JWT,
+  },
+  actions: {
+    setCredentials(JWT, userName) {
+      this.$patch({
+        JWT,
+        userName
+      });
     },
-    actions: {
-        setCredentials(accessToken, user) {
-            this.accessToken = accessToken;
-            this.user = user;
-        },
-        clearCredentials() {
-            this.accessToken = null;
-            this.user = null;
-        }
+    clearCredentials() {
+      this.$patch({
+        JWT: null,
+        userName: null
+      });
     }
+  }
 });
