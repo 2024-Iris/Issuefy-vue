@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -147,7 +147,7 @@ const callsToAction = [
 ]
 
 const authStore = useAuthStore()
-const userName = ref(authStore.userName)
+const userName = computed(() => authStore.userName);
 
 const mobileMenuOpen = ref(false)
 </script>
