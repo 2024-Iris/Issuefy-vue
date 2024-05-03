@@ -39,7 +39,8 @@ const router = createRouter({
         },
         {
             path: '/callback',
-            component: GithubAuth
+            component: GithubAuth,
+            meta: {hideHeader: true}
         },
         {
             path: '/:pathMatch(.*)*',
