@@ -51,9 +51,10 @@
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/settings">Settings</router-link>
       </PopoverGroup>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-        <p class="text-mg font-semibold leading-6 text-blue-800">
+        <img :src= "avatarURL" class="w-10 h-10 rounded-full" alt="">
+        <span class="text-sg font-semibold leading-6 text-blue-800">
           Hi! {{ userName }}
-        </p>
+        </span>
       </div>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Log out</router-link>
@@ -148,6 +149,7 @@ const callsToAction = [
 
 const authStore = useAuthStore()
 const userName = computed(() => authStore.userName);
+const avatarURL = computed(() => authStore.avatarURL);
 
 const mobileMenuOpen = ref(false)
 </script>

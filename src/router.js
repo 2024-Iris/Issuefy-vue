@@ -52,7 +52,6 @@ router.beforeEach((to, from, next) => {
     const authStore = useAuthStore()
     const isLogin = ref(authStore.isLoggedIn)
 
-    console.log('로그인 상태 : ' + isLogin.value)
     if (to.matched.some(record => record.meta.requiresAuth)) {
         // pinia 스토어에서 로그인 상태 확인
         if (!isLogin.value) {
