@@ -8,6 +8,7 @@ import RepositoryPage from "@/components/RepositoryPage.vue";
 import NotFoundPage from "@/components/NotFoundPage.vue"
 import HomePage from "@/components/HomePage.vue";
 import SettingPage from "@/components/SettingPage.vue";
+import IssuePage from "@/components/IssuePage.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -20,6 +21,11 @@ const router = createRouter({
         {
             path: '/repositories',
             component: RepositoryPage,
+            meta: {requiresAuth: true}
+        },
+        {
+            path: '/issues',
+            component: IssuePage,
             meta: {requiresAuth: true}
         },
         {
