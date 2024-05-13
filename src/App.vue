@@ -53,7 +53,7 @@
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
         <img :src= "avatarURL" class="w-10 h-10 rounded-full" alt="">
         <span class="text-sg font-semibold leading-6 text-blue-800">
-          Hi! {{ userName }}
+          {{ userName }}
         </span>
       </div>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
