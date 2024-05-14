@@ -1,23 +1,30 @@
 <template>
-  <div class="container mx-auto mt-6">
-    <div class="header bg-gray-900 text-white py-4 px-6 flex justify-between items-center">
-      <h1 class="text-lg">리포지토리 목록</h1>
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+  <div class="container mx-auto mt-6 max-w-7xl font-sans">
+    <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
+      <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
         리포지토리 추가
       </button>
     </div>
+    <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
+      <div class="w-1/3 text-left text-base">조직 이름</div>
+      <div class="w-1/3 text-left text-base">리포지토리 이름</div>
+      <div class="w-1/3 text-center text-base">최근 업데이트</div>
+    </div>
     <div v-for="repository in repositories" :key="repository.id"
-         class="repository bg-white border-b border-gray-200 p-4 flex justify-between items-center hover:bg-gray-100">
-      <div class="flex items-center">
-        <span class="org text-lg font-semibold mr-3"
-              :class="{'text-green-500': repository.org.length > 0}">{{ repository.org.join(', ') }}</span>
-        <h2 class="text-xl font-semibold">{{ repository.name }}</h2>
+         class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
+      <div class="w-1/3 text-left">
+        <span class="org text-base font-bold mr-3"
+              :class="{'text-purple-600': repository.org.length > 0}">{{ repository.org.join(', ') }}</span>
       </div>
-      <div class="repository-info text-right">
-        <p class="text-sm text-gray-600">{{ repository.updatedAt }}</p>
+      <div class="w-1/3 text-left">
+        <router-link :to="{ name: 'issue', params: { id: repository.id } }"
+                     class="text-base font-bold text-blue-500 hover:text-blue-800">
+          {{ repository.name }}
+        </router-link>
       </div>
-      <div>
-        <router-link :to="'/repository/' + repository.id" class="text-blue-500 hover:text-blue-800">상세 보기</router-link>
+      <div class="w-1/3 text-center">
+        <p class="text-base text-gray-700">{{ repository.updatedAt }}</p>
       </div>
     </div>
   </div>
@@ -25,6 +32,7 @@
 
 <script>
 export default {
+  name: 'RepositoryList',
   data() {
     return {
       repositories: [
@@ -51,11 +59,8 @@ export default {
   }
 }
 </script>
-<style scoped>
-.header {
-  background-color: #2d333b;
-}
 
+<style scoped>
 .repository {
   transition: background-color 0.3s;
 }
@@ -64,7 +69,7 @@ export default {
   background-color: #f3f4f6;
 }
 
-.tags span {
-  margin-right: 4px;
+.repository-header {
+  background-color: #f3f4f6;
 }
 </style>
