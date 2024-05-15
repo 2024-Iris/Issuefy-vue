@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from "@/components/LoginPage.vue";
 import GithubAuth from "@/components/GithubAuth.vue";
 import { ref } from "vue";
-import { useAuthStore } from "@/store/auth";
+import { useAuthStore } from "@/store/pinia";
 import LogoutPage from "@/components/LogoutPage.vue";
 import RepositoryPage from "@/components/RepositoryPage.vue";
 import NotFoundPage from "@/components/NotFoundPage.vue";
@@ -21,13 +21,14 @@ const routes = [
         path: '/repositories',
         name: 'repositories',
         component: RepositoryPage,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
     },
     {
-        path: '/issue/:id',
+        path: '/:org/:repository/issues',
         name: 'issue',
         component: IssuePage,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
+        props: true
     },
     {
         path: '/settings',
