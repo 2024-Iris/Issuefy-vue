@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from '@/store/auth';
+import { useAuthStore } from '@/store/pinia';
 import axios from 'axios';
 
 const router = useRouter();
