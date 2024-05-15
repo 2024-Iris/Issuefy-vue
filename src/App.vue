@@ -9,11 +9,13 @@
       <div class="hidden lg:flex lg:items-center lg:gap-x-6">
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/">Home</router-link>
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/repositories">Repositories</router-link>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/settings">Settings</router-link>
       </div>
-      <div class="flex items-center gap-x-4 lg:ml-auto">
-        <img :src="avatarURL" class="w-10 h-10 rounded-full" alt="User Avatar">
-        <span class="text-sm font-semibold leading-6 text-blue-800">{{ userName }}</span>
+      <div class="mx-5"></div>
+      <div class="flex items-center gap-x-4">
+        <div class="flex items-center space-x-2">
+          <img :src="avatarURL" class="w-10 h-10 rounded-full" alt="User Avatar">
+          <router-link to="/settings" class="text-sm font-semibold leading-6 text-blue-600 hover:underline">{{ userName }}</router-link>
+        </div>
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Log out</router-link>
       </div>
       <div class="flex lg:hidden">
@@ -65,7 +67,7 @@
 import { computed, ref } from 'vue'
 import { Dialog, DialogPanel } from '@headlessui/vue'
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
-import { useAuthStore } from "@/store/auth"
+import { useAuthStore } from "@/store/pinia"
 
 const authStore = useAuthStore()
 const userName = computed(() => authStore.userName)
