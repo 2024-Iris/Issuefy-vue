@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       org: 'elastic',
-      repository: 'kibana'
+      repository: 'elasticsearch'
     };
   }
 }
