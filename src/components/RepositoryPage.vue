@@ -11,14 +11,17 @@
       <div class="w-1/3 text-left text-base">리포지토리 이름</div>
       <div class="w-1/3 text-center text-base">최근 업데이트</div>
     </div>
-    <div v-for="repository in repositories" :key="repository.id"
+    <div v-for="repository in filteredRepositories" :key="repository.id"
          class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
-      <div class="w-1/3 text-left">
+      <div class="w-1/3 text-left flex items-center">
+        <button @click="toggleStar(repository.id)" class="text-yellow-500 mr-2">
+          {{ repository.star ? '★' : '☆' }}
+        </button>
         <span class="org text-base font-bold mr-3"
               :class="{'text-purple-600': repository.org.length > 0}">{{ repository.org.join(', ') }}</span>
       </div>
       <div class="w-1/3 text-left">
-        <router-link :to="{ name: 'issue', params: { id: repository.id } }"
+        <router-link :to="`/${repository.org[0]}/${repository.name}/issues`"
                      class="text-base font-bold text-blue-500 hover:text-blue-800">
           {{ repository.name }}
         </router-link>
@@ -31,33 +34,35 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, computed } from 'vue';
+import { useStarStore } from '@/store/pinia';
+
+export default defineComponent({
   name: 'RepositoryList',
-  data() {
+  props: {
+    starred: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props) {
+    const store = useStarStore();
+    const filteredRepositories = computed(() => {
+      return props.starred
+        ? store.repositories.filter(repository => repository.star)
+        : store.repositories;
+    });
+
+    const toggleStar = (id) => {
+      store.toggleRepositoryStar(id);
+    };
+
     return {
-      repositories: [
-        {
-          id: 1,
-          name: "첫번째 리포지토리",
-          org: ["elastic"],
-          updatedAt: "2024-05-13"
-        },
-        {
-          id: 2,
-          name: "두번째 리포지토리",
-          org: ["spring-boot"],
-          updatedAt: "2024-05-12"
-        },
-        {
-          id: 3,
-          name: "세번째 리포지토리",
-          org: ["vue"],
-          updatedAt: "2024-05-14"
-        }
-      ]
+      filteredRepositories,
+      toggleStar
     };
   }
-}
+});
 </script>
 
 <style scoped>

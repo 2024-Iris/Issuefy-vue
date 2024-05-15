@@ -8,10 +8,14 @@
       <div class="w-1/3 text-left text-base">태그</div>
       <div class="w-1/3 text-center text-base">상태 및 업데이트 날짜</div>
     </div>
-    <div v-for="issue in issues" :key="issue.id"
+    <div v-for="issue in filteredIssues" :key="issue.id"
          class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
-      <div class="w-1/3 text-left">
-        <router-link :to="'/issues/' + issue.id" class="text-base font-bold text-blue-500 hover:text-blue-800">
+      <div class="w-1/3 text-left flex items-center">
+        <button @click="toggleStar(issue.id)" class="text-yellow-500 mr-2">
+          {{ issue.star ? '★' : '☆' }}
+        </button>
+        <router-link :to="`/${org}/${repository}/issues/` + issue.id"
+                     class="text-base font-bold text-blue-500 hover:text-blue-800">
           {{ issue.title }}
         </router-link>
       </div>
@@ -31,36 +35,43 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, computed } from 'vue';
+import { useStarStore } from '@/store/pinia';
+
+export default defineComponent({
   name: 'IssueList',
-  data() {
+  props: {
+    org: {
+      type: String,
+      required: true
+    },
+    repository: {
+      type: String,
+      required: true
+    },
+    starred: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props) {
+    const store = useStarStore();
+    const filteredIssues = computed(() => {
+      return props.starred
+        ? store.issues.filter(issue => issue.star)
+        : store.issues;
+    });
+
+    const toggleStar = (id) => {
+      store.toggleIssueStar(id);
+    };
+
     return {
-      issues: [
-        {
-          id: 1,
-          title: "첫번째 이슈 제목",
-          tags: ["bug", "performance"],
-          status: "open",
-          updatedAt: "2024-05-13"
-        },
-        {
-          id: 2,
-          title: "두번째 이슈 제목",
-          tags: ["good first issue"],
-          status: "closed",
-          updatedAt: "2024-05-12"
-        },
-        {
-          id: 3,
-          title: "세번째 이슈 제목",
-          tags: ["enhancement", "auth"],
-          status: "open",
-          updatedAt: "2024-05-14"
-        }
-      ]
+      filteredIssues,
+      toggleStar
     };
   }
-}
+});
 </script>
 
 <style scoped>
