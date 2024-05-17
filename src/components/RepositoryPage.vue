@@ -4,7 +4,7 @@
       <div v-if="!hideListName">
         <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
       </div>
-      <div v-if="!hideAddBox" class="flex items-center space-x-4 w-full justify-end">
+      <div v-if="!hideAddBox" class="flex items-center space-x-4 w-2/3 justify-end">
         <div v-if="adding" v-click-outside="cancelAdding" class="flex items-center space-x-2">
           <input
               v-model="newRepositoryUrl"
