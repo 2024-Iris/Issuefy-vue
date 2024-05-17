@@ -1,13 +1,15 @@
 export default {
   beforeMount(el, binding) {
     el.clickOutsideEvent = function(event) {
-      if (!el.contains(event.target)) {
+      if (!(el === event.target || el.contains(event.target))) {
         binding.value(event);
       }
     };
-    document.body.addEventListener('mouseup', el.clickOutsideEvent);
+    setTimeout(() => {
+      document.body.addEventListener('click', el.clickOutsideEvent);
+    }, 0);
   },
   unmounted(el) {
-    document.body.removeEventListener('mouseup', el.clickOutsideEvent);
+    document.body.removeEventListener('click', el.clickOutsideEvent);
   },
 };

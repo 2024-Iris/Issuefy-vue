@@ -4,8 +4,28 @@
       <div v-if="!hideListName">
         <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
       </div>
-      <div v-if="!hideAddBox">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+      <div v-if="!hideAddBox" class="flex items-center space-x-4 w-full justify-end">
+        <div v-if="adding" v-click-outside="cancelAdding" class="flex items-center space-x-2">
+          <input
+              v-model="newRepositoryUrl"
+              @keyup.enter="addRepository"
+              type="text"
+              id="newRepositoryUrl"
+              name="newRepositoryUrl"
+              placeholder="Enter Repository URL"
+              class="input-full-width font-thin px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+          />
+          <button @click="addRepository"
+                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+            추가
+          </button>
+          <button @click="cancelAdding"
+                  class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm">
+            취소
+          </button>
+        </div>
+        <button v-if="!adding" @click="startAdding"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
           리포지토리 추가
         </button>
       </div>
@@ -38,14 +58,17 @@
   </div>
 </template>
 
-
 <script>
 import {computed, defineComponent, ref} from 'vue';
 import {useStarStore} from '@/store/pinia';
 import {useRoute} from 'vue-router';
+import clickOutside from '@/directives/clickOutside';
 
 export default defineComponent({
   name: 'RepositoryList',
+  directives: {
+    clickOutside
+  },
   props: {
     starred: {
       type: Boolean,
@@ -71,7 +94,6 @@ export default defineComponent({
     };
 
     const startAdding = () => {
-      console.log('startAdding called'); // 로그 추가
       adding.value = true;
     };
 
@@ -81,13 +103,10 @@ export default defineComponent({
     };
 
     const addRepository = () => {
-      console.log('addRepository called'); // 로그 추가
       if (newRepositoryUrl.value) {
-        console.log('Repository URL:', newRepositoryUrl.value); // 콘솔 로그 추가
+        console.log('Repository URL:', newRepositoryUrl.value);
         // 여기에 리포지토리 추가 로직을 구현하세요.
         cancelAdding();
-      } else {
-        console.log('URL is empty'); // 빈 URL일 경우 로그 출력
       }
     };
 
