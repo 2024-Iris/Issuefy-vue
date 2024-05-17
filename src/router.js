@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import LoginPage from "@/components/LoginPage.vue";
 import GithubAuth from "@/components/GithubAuth.vue";
-import { ref } from "vue";
-import { useAuthStore } from "@/store/pinia";
+import {ref} from "vue";
+import {useAuthStore} from "@/store/pinia";
 import LogoutPage from "@/components/LogoutPage.vue";
 import RepositoryPage from "@/components/RepositoryPage.vue";
 import NotFoundPage from "@/components/NotFoundPage.vue";
@@ -15,44 +15,55 @@ const routes = [
         path: '/',
         name: 'home',
         component: HomePage,
-        meta: { requiresAuth: true }
+        meta: {
+            requiresAuth: true,
+            hideAddBox: true,
+            hideListName: true
+        }
     },
     {
         path: '/repositories',
         name: 'repositories',
         component: RepositoryPage,
-        meta: { requiresAuth: true },
+        meta: {
+            requiresAuth: true,
+            hideAddBox: false,
+            hideListName: false
+        },
     },
     {
         path: '/:org/:repository/issues',
         name: 'issue',
         component: IssuePage,
-        meta: { requiresAuth: true },
+        meta: {
+            requiresAuth: true,
+            hideListName: false
+        },
         props: true
     },
     {
         path: '/settings',
         name: 'settings',
         component: SettingPage,
-        meta: { requiresAuth: true }
+        meta: {requiresAuth: true}
     },
     {
         path: '/login',
         name: 'login',
         component: LoginPage,
-        meta: { hideHeader: true }
+        meta: {hideHeader: true}
     },
     {
         path: '/logout',
         name: 'logout',
         component: LogoutPage,
-        meta: { hideHeader: true }
+        meta: {hideHeader: true}
     },
     {
         path: '/callback',
         name: 'callback',
         component: GithubAuth,
-        meta: { hideHeader: true }
+        meta: {hideHeader: true}
     },
     {
         path: '/:pathMatch(.*)*',
