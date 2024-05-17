@@ -10,6 +10,7 @@
         </button>
       </div>
     </div>
+
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
       <div class="w-1/3 text-left text-base">조직 이름</div>
       <div class="w-1/3 text-left text-base">리포지토리 이름</div>
@@ -37,8 +38,9 @@
   </div>
 </template>
 
+
 <script>
-import {computed, defineComponent} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import {useStarStore} from '@/store/pinia';
 import {useRoute} from 'vue-router';
 
@@ -52,9 +54,11 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStarStore();
-    const route = useRoute()
-    const hideAddBox = computed(() => route.meta.hideAddBox)
-    const hideListName = computed(() => route.meta.hideListName)
+    const route = useRoute();
+    const hideAddBox = computed(() => route.meta.hideAddBox);
+    const hideListName = computed(() => route.meta.hideListName);
+    const adding = ref(false);
+    const newRepositoryUrl = ref('');
 
     const filteredRepositories = computed(() => {
       return props.starred
@@ -66,15 +70,42 @@ export default defineComponent({
       store.toggleRepositoryStar(id);
     };
 
+    const startAdding = () => {
+      console.log('startAdding called'); // 로그 추가
+      adding.value = true;
+    };
+
+    const cancelAdding = () => {
+      adding.value = false;
+      newRepositoryUrl.value = '';
+    };
+
+    const addRepository = () => {
+      console.log('addRepository called'); // 로그 추가
+      if (newRepositoryUrl.value) {
+        console.log('Repository URL:', newRepositoryUrl.value); // 콘솔 로그 추가
+        // 여기에 리포지토리 추가 로직을 구현하세요.
+        cancelAdding();
+      } else {
+        console.log('URL is empty'); // 빈 URL일 경우 로그 출력
+      }
+    };
+
     return {
       filteredRepositories,
       toggleStar,
       hideAddBox,
-      hideListName
+      hideListName,
+      adding,
+      newRepositoryUrl,
+      startAdding,
+      cancelAdding,
+      addRepository
     };
   }
 });
 </script>
+
 
 <style scoped>
 .repository {
@@ -87,5 +118,9 @@ export default defineComponent({
 
 .repository-header {
   background-color: #f3f4f6;
+}
+
+.input-full-width {
+  width: 400px;
 }
 </style>
