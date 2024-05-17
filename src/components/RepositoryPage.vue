@@ -1,10 +1,14 @@
 <template>
   <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
-      <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
-        리포지토리 추가
-      </button>
+      <div v-if="!hideListName">
+        <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
+      </div>
+      <div v-if="!hideAddBox">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+          리포지토리 추가
+        </button>
+      </div>
     </div>
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
       <div class="w-1/3 text-left text-base">조직 이름</div>
@@ -34,8 +38,9 @@
 </template>
 
 <script>
-import { defineComponent, computed } from 'vue';
-import { useStarStore } from '@/store/pinia';
+import {computed, defineComponent} from 'vue';
+import {useStarStore} from '@/store/pinia';
+import {useRoute} from 'vue-router';
 
 export default defineComponent({
   name: 'RepositoryList',
@@ -47,10 +52,14 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStarStore();
+    const route = useRoute()
+    const hideAddBox = computed(() => route.meta.hideAddBox)
+    const hideListName = computed(() => route.meta.hideListName)
+
     const filteredRepositories = computed(() => {
       return props.starred
-        ? store.repositories.filter(repository => repository.star)
-        : store.repositories;
+          ? store.repositories.filter(repository => repository.star)
+          : store.repositories;
     });
 
     const toggleStar = (id) => {
@@ -59,7 +68,9 @@ export default defineComponent({
 
     return {
       filteredRepositories,
-      toggleStar
+      toggleStar,
+      hideAddBox,
+      hideListName
     };
   }
 });

@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
-      <h1 class="text-base text-left">이슈 목록</h1>
+      <h1 v-if="!hideListName" class="text-base text-left">이슈 목록</h1>
     </div>
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
       <div class="w-1/3 text-left text-base">이슈 제목</div>
@@ -37,6 +37,7 @@
 <script>
 import { defineComponent, computed } from 'vue';
 import { useStarStore } from '@/store/pinia';
+import { useRoute } from "vue-router";
 
 export default defineComponent({
   name: 'IssueList',
@@ -56,6 +57,8 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStarStore();
+    const route = useRoute()
+    const hideListName = computed(() => route.meta.hideListName)
     const filteredIssues = computed(() => {
       return props.starred
         ? store.issues.filter(issue => issue.star)
@@ -68,7 +71,8 @@ export default defineComponent({
 
     return {
       filteredIssues,
-      toggleStar
+      toggleStar,
+      hideListName
     };
   }
 });
