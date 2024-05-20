@@ -15,8 +15,10 @@ async function fetchJWT(code) {
       params: { code }
     });
     const { jwt, userName, avatarURL } = response.data;
-    return { jwt, userName, avatarURL};
+    const { accessToken, refreshToken } = jwt;
+    return { accessToken, refreshToken, userName, avatarURL };
   } catch (error) {
+    console.error('Error fetching JWT:', error);
     return null;
   }
 }
@@ -26,9 +28,9 @@ onMounted(async () => {
   if (error) {
     await router.push('/login');
   } else if (authorizationCode) {
-    const { jwt, userName, avatarURL } = await fetchJWT(authorizationCode);
-    if (jwt && userName) {
-      authStore.setCredentials(jwt, userName, avatarURL);
+    const tokens = await fetchJWT(authorizationCode);
+    if (tokens && tokens.accessToken && tokens.userName) {
+      authStore.setCredentials(tokens.accessToken, tokens.refreshToken, tokens.userName, tokens.avatarURL);
       await nextTick();
       await router.push('/');
     } else {
