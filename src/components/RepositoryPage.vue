@@ -145,7 +145,7 @@ export default defineComponent({
           showNotificationMessage('success', '리포지토리 추가 완료');
           cancelAdding();
         } else {
-          showNotificationMessage('error', '정확한 URL을 입력하세요');
+          showNotificationMessage('error', '올바른 URL을 입력하세요');
         }
       } else {
         showNotificationMessage('error', 'URL을 입력하세요');

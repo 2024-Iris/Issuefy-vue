@@ -1,8 +1,8 @@
 <template>
   <div v-if="show" class="notification" :class="type">
     <div class="notification-content">
-      <font-awesome-icon v-if="type === 'success'" icon="check" style="color: black;"/>
-      <font-awesome-icon v-else icon="triangle-exclamation"/>
+      <font-awesome-icon v-if="type === 'success'" icon="check" style="color: #63E6BE;"/>
+      <font-awesome-icon v-else icon="circle-exclamation"/>
       <span>{{ message }}</span>
     </div>
   </div>
@@ -31,7 +31,7 @@ export default defineComponent({
 <style scoped>
 .notification {
   position: fixed;
-  top: 80px;
+  top: 90px;
   left: 50%;
   transform: translateX(-50%);
   padding: 16px;
@@ -48,7 +48,7 @@ export default defineComponent({
 }
 
 .error {
-  background-color: #f56565;
+  background-color: #ff5566;
 }
 
 .notification-content {
