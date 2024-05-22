@@ -7,25 +7,25 @@
       <div v-if="!hideAddBox" class="flex items-center space-x-4 w-2/3 justify-end">
         <div v-if="adding" v-click-outside="cancelAdding" class="flex items-center space-x-2">
           <input
-            v-model="newRepositoryUrl"
-            @keyup.enter="addRepository"
-            type="text"
-            id="newRepositoryUrl"
-            name="newRepositoryUrl"
-            placeholder="Enter Repository URL"
-            class="input-full-width font-thin px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+              v-model="newRepositoryUrl"
+              @keyup.enter="addRepository"
+              type="text"
+              id="newRepositoryUrl"
+              name="newRepositoryUrl"
+              placeholder="Enter Repository URL"
+              class="input-full-width font-thin px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
           />
           <button @click="addRepository"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
             추가
           </button>
           <button @click="cancelAdding"
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm">
+                  class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm">
             취소
           </button>
         </div>
         <button v-if="!adding" @click="startAdding"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
           리포지토리 추가
         </button>
       </div>
@@ -39,7 +39,7 @@
 
     <div v-for="org in repositories" :key="org.org.id">
       <div v-for="repository in org.org.repositories" :key="repository.id"
-        class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
+           class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
         <div class="w-1/3 text-left flex items-center">
           <button @click="toggleStar(repository.id)" class="text-yellow-500 mr-2">
             {{ repository.star ? '★' : '☆' }}
@@ -48,7 +48,7 @@
         </div>
         <div class="w-1/3 text-left">
           <router-link :to="`/${org.org.name}/${repository.name}/issues`"
-            class="text-base font-bold text-blue-500 hover:text-blue-800">
+                       class="text-base font-bold text-blue-500 hover:text-blue-800">
             {{ repository.name }}
           </router-link>
         </div>
@@ -58,14 +58,14 @@
       </div>
     </div>
 
-    <Notification :show="showNotification" :type="notificationType" :message="notificationMessage" />
+    <Notification :show="showNotification" :type="notificationType" :message="notificationMessage"/>
   </div>
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, ref } from 'vue';
-import { useAuthStore, useStarStore } from '@/store/pinia';
-import { useRoute } from 'vue-router';
+import {computed, defineComponent, onMounted, ref} from 'vue';
+import {useAuthStore, useStarStore} from '@/store/pinia';
+import {useRoute} from 'vue-router';
 import clickOutside from '@/directives/clickOutside';
 import axios from 'axios';
 import Notification from '@/components/RepositoryNotificationPage.vue';
@@ -98,14 +98,14 @@ export default defineComponent({
 
     const filteredRepositories = computed(() => {
       return props.starred
-        ? repositories.value.map(org => ({
+          ? repositories.value.map(org => ({
             ...org,
             org: {
               ...org.org,
               repositories: org.org.repositories.filter(repository => repository.star)
             }
           }))
-        : repositories.value;
+          : repositories.value;
     });
 
     const toggleStar = (id) => {
@@ -142,11 +142,13 @@ export default defineComponent({
         if (validateGithubUrl(newRepositoryUrl.value)) {
           console.log('Repository URL:', newRepositoryUrl.value);
           // 여기에 리포지토리 추가 로직을 구현하세요.
-          showNotificationMessage('success', 'Repository added successfully');
+          showNotificationMessage('success', '리포지토리 추가 완료');
           cancelAdding();
         } else {
-          showNotificationMessage('error', 'Invalid GitHub repository URL');
+          showNotificationMessage('error', '정확한 URL을 입력하세요');
         }
+      } else {
+        showNotificationMessage('error', 'URL을 입력하세요');
       }
     };
 

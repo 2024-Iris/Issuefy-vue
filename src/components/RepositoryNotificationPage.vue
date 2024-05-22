@@ -1,18 +1,14 @@
 <template>
   <div v-if="show" class="notification" :class="type">
     <div class="notification-content">
-      <svg v-if="type === 'success'" xmlns="http://www.w3.org/2000/svg" height="14" width="12.25" viewBox="0 0 448 512" class="icon">
-        <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
-      </svg>
-      <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon">
-        <path fill="#63E6BE" d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
-      </svg>
+      <font-awesome-icon v-if="type === 'success'" icon="check" style="color: black;"/>
+      <font-awesome-icon v-else icon="triangle-exclamation"/>
       <span>{{ message }}</span>
     </div>
   </div>
 </template>
 <script>
-import { defineComponent } from 'vue';
+import {defineComponent} from 'vue';
 
 export default defineComponent({
   props: {
@@ -58,6 +54,7 @@ export default defineComponent({
 .notification-content {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .notification-content i {
