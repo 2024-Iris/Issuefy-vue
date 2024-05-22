@@ -57,6 +57,8 @@
         </div>
       </div>
     </div>
+
+    <Notification :show="showNotification" :type="notificationType" :message="notificationMessage" />
   </div>
 </template>
 
@@ -66,11 +68,15 @@ import { useAuthStore, useStarStore } from '@/store/pinia';
 import { useRoute } from 'vue-router';
 import clickOutside from '@/directives/clickOutside';
 import axios from 'axios';
+import Notification from '@/components/RepositoryNotificationPage.vue';
 
 export default defineComponent({
   name: 'RepositoryList',
   directives: {
     clickOutside
+  },
+  components: {
+    Notification
   },
   props: {
     starred: {
@@ -86,6 +92,9 @@ export default defineComponent({
     const adding = ref(false);
     const newRepositoryUrl = ref('');
     const repositories = ref([]);
+    const showNotification = ref(false);
+    const notificationType = ref('success');
+    const notificationMessage = ref('');
 
     const filteredRepositories = computed(() => {
       return props.starred
@@ -119,11 +128,25 @@ export default defineComponent({
       newRepositoryUrl.value = '';
     };
 
+    const showNotificationMessage = (type, message) => {
+      notificationType.value = type;
+      notificationMessage.value = message;
+      showNotification.value = true;
+      setTimeout(() => {
+        showNotification.value = false;
+      }, 3000);
+    };
+
     const addRepository = () => {
       if (newRepositoryUrl.value) {
-        console.log('Repository URL:', newRepositoryUrl.value);
-        // 여기에 리포지토리 추가 로직을 구현하세요.
-        cancelAdding();
+        if (validateGithubUrl(newRepositoryUrl.value)) {
+          console.log('Repository URL:', newRepositoryUrl.value);
+          // 여기에 리포지토리 추가 로직을 구현하세요.
+          showNotificationMessage('success', 'Repository added successfully');
+          cancelAdding();
+        } else {
+          showNotificationMessage('error', 'Invalid GitHub repository URL');
+        }
       }
     };
 
@@ -141,6 +164,10 @@ export default defineComponent({
       newRepositoryUrl,
       startAdding,
       cancelAdding,
+      showNotification,
+      notificationType,
+      notificationMessage,
+      showNotificationMessage,
       addRepository
     };
   }
@@ -162,6 +189,11 @@ async function getRepositories() {
     console.error('Error fetching repositories:', error);
     return [];
   }
+}
+
+function validateGithubUrl(url) {
+  const githubUrlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+/;
+  return githubUrlPattern.test(url);
 }
 </script>
 
