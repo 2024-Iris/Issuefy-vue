@@ -31,7 +31,7 @@ export default defineComponent({
 <style scoped>
 .notification {
   position: fixed;
-  top: 90px;
+  top: 85px;
   left: 50%;
   transform: translateX(-50%);
   padding: 16px;
