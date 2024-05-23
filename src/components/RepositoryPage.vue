@@ -141,9 +141,15 @@ export default defineComponent({
       if (newRepositoryUrl.value) {
         if (validateGithubUrl(newRepositoryUrl.value)) {
           console.log('Repository URL:', newRepositoryUrl.value);
-          // 여기에 리포지토리 추가 로직을 구현하세요.
-          showNotificationMessage('success', '리포지토리 추가 완료');
-          cancelAdding();
+          requestAddRepository(newRepositoryUrl.value)
+              .then(() => {
+                showNotificationMessage('success', '리포지토리 추가 완료');
+                cancelAdding();
+              })
+              .catch(error => {
+                console.error('Error adding repository:', error);
+                showNotificationMessage('error', '해당 리포지토리를 찾을수 없습니다');
+              });
         } else {
           showNotificationMessage('error', '올바른 URL을 입력하세요');
         }
@@ -189,8 +195,26 @@ async function getRepositories() {
     return response.data;
   } catch (error) {
     console.error('Error fetching repositories:', error);
-    return [];
+    return error;
   }
+}
+
+async function requestAddRepository(repositoryUrl) {
+  const authStore = useAuthStore();
+  const accessToken = authStore.accessToken;
+
+
+    const response = await axios.post('http://localhost:8080/api/subscribe',
+        {
+          repositoryUrl: repositoryUrl
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+    );
+    return response.data;
 }
 
 function validateGithubUrl(url) {
