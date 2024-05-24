@@ -136,7 +136,7 @@ export default defineComponent({
         showNotification.value = false;
       }, 3000);
     };
-
+    // TODO 추가 후 patch 명령어 추가
     const addRepository = () => {
       if (newRepositoryUrl.value) {
         if (validateGithubUrl(newRepositoryUrl.value)) {
