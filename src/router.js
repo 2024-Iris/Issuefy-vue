@@ -9,6 +9,8 @@ import NotFoundPage from "@/components/NotFoundPage.vue";
 import HomePage from "@/components/HomePage.vue";
 import SettingPage from "@/components/SettingPage.vue";
 import IssuePage from "@/components/IssuePage.vue";
+import axios from "axios";
+import ExpiredPage from "@/components/ExpiredPage.vue";
 
 const routes = [
     {
@@ -68,7 +70,13 @@ const routes = [
     {
         path: '/:pathMatch(.*)*',
         name: 'notfound',
-        component: NotFoundPage
+        component: NotFoundPage,
+        meta: {requiresAuth: true}
+    },
+    {
+        path: '/expired',
+        name: 'expired',
+        component: ExpiredPage,
     }
 ];
 
@@ -76,6 +84,18 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 });
+
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 403) {
+            const authStore = useAuthStore();
+            authStore.clearCredentials();
+            router.push('/expired');
+        }
+        return Promise.reject(error);
+    }
+);
 
 router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
@@ -91,5 +111,6 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
+
 
 export default router;
