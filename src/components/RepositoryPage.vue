@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto mt-6 max-w-7xl font-sans">
+  <div v-if="repositories.length" class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
       <div v-if="!hideListName">
         <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
@@ -110,7 +110,6 @@ export default defineComponent({
 
     const toggleStar = (id) => {
       store.toggleRepositoryStar(id);
-      // Update local repository data to reflect the change
       for (const org of repositories.value) {
         const repo = org.org.repositories.find(repo => repo.id === id);
         if (repo) {
@@ -136,15 +135,19 @@ export default defineComponent({
         showNotification.value = false;
       }, 3000);
     };
-    // TODO 추가 후 patch 명령어 추가
+
     const addRepository = () => {
       if (newRepositoryUrl.value) {
         if (validateGithubUrl(newRepositoryUrl.value)) {
           console.log('Repository URL:', newRepositoryUrl.value);
+          newRepositoryUrl.value = newRepositoryUrl.value.toLowerCase();
           requestAddRepository(newRepositoryUrl.value)
               .then(() => {
                 showNotificationMessage('success', '리포지토리 추가 완료');
                 cancelAdding();
+                getRepositories().then(data => {
+                  repositories.value = data;
+                });
               })
               .catch(error => {
                 console.error('Error adding repository:', error);
@@ -204,17 +207,17 @@ async function requestAddRepository(repositoryUrl) {
   const accessToken = authStore.accessToken;
 
 
-    const response = await axios.post('http://localhost:8080/api/subscribe',
-        {
-          repositoryUrl: repositoryUrl
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
+  const response = await axios.post('http://localhost:8080/api/subscribe',
+      {
+        repositoryUrl: repositoryUrl
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
         }
-    );
-    return response.data;
+      }
+  );
+  return response.data;
 }
 
 function validateGithubUrl(url) {
