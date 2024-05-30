@@ -19,10 +19,10 @@
             }}
           </router-link>
         </div>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Log out</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Logout</router-link>
       </div>
       <div v-else class="flex justify-end flex-1">
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/login">Log in</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/login">Login</router-link>
       </div>
       <div v-if="isLoggedIn" class="flex lg:hidden">
         <button class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" type="button"
