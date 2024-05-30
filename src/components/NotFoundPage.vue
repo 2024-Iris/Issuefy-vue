@@ -1,0 +1,15 @@
+<script>
+</script>
+
+<template>
+  <main class="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
+    <div class="text-center">
+      <p class="text-4xl font-semibold text-indigo-600">404</p>
+      <h2 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">페이지를 찾을수 없습니다.</h2>
+    </div>
+  </main>
+</template>
+
+<style scoped>
+
+</style>

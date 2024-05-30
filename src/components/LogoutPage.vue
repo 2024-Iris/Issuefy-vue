@@ -1,6 +1,6 @@
 <script setup>
 
-import {useAuthStore} from "@/store/auth";
+import {useAuthStore} from "@/store/pinia";
 import {useRouter} from "vue-router";
 
 const authStore = useAuthStore()
@@ -11,6 +11,6 @@ router.push('/login')
 </script>
 
 <template>
-<p></p>
+  <p></p>
 </template>
 

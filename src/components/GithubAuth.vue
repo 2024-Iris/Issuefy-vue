@@ -1,37 +1,48 @@
 <script setup>
-import {useRoute, useRouter} from 'vue-router';
-import {onMounted, ref} from "vue";
-import {useAuthStore} from "@/store/auth";
+import { onMounted, nextTick } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/store/pinia';
+import axios from 'axios';
 
 const router = useRouter();
 const route = useRoute();
-const userName = ref('')
 const authorizationCode = route.query.code;
+const authStore = useAuthStore();
 
-onMounted(() => {
+async function fetchJWT(code) {
+  try {
+    const response = await axios.get('http://localhost:8080/api/login', {
+      params: { code }
+    });
+    const { jwt, userName, avatarURL } = response.data;
+    const { accessToken, refreshToken } = jwt;
+    return { accessToken, refreshToken, userName, avatarURL };
+  } catch (error) {
+    console.error('Error fetching JWT:', error);
+    return null;
+  }
+}
+
+onMounted(async () => {
   const error = route.query.error;
   if (error) {
-    router.push('/login');
-  } else {
-    const authStore = useAuthStore()
-    const tempToken = 'ASDJI21388SAASDOGMV'
-    const user = {name: 'roy'}
-    authStore.setCredentials(tempToken, user)
-    userName.value = authStore.user.name
-    if (authorizationCode) {
-      // 예를 들어, API를 통해 서버로 code를 보내고 처리 결과를 기다립니다.
-      // 처리 결과에 따라 다음 스텝으로 진행하거나 에러 핸들링을 할 수 있습니다.
-      // 여기에 API 요청 로직을 구현하세요.
+    await router.push('/login');
+  } else if (authorizationCode) {
+    const tokens = await fetchJWT(authorizationCode);
+    if (tokens && tokens.accessToken && tokens.userName) {
+      authStore.setCredentials(tokens.accessToken, tokens.refreshToken, tokens.userName, tokens.avatarURL);
+      await nextTick();
+      await router.push('/');
+    } else {
+      await router.push('/login');
     }
   }
 });
 </script>
 
+
 <template>
   <div class="flex h-screen flex-col items-center justify-start space-y-4">
-    <h1>깃허브 로그인</h1>
-    <p>AuthorizationCode : {{ authorizationCode }}</p>
-    <p>이름 : {{userName}} </p>
   </div>
 </template>
 
