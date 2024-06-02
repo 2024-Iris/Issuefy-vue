@@ -1,5 +1,5 @@
 <template>
-  <div v-if="repositories.length" class="container mx-auto mt-6 max-w-7xl font-sans">
+  <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
       <div v-if="!hideListName">
         <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
@@ -189,7 +189,7 @@ async function getRepositories() {
   const accessToken = authStore.accessToken;
 
   try {
-    const response = await axios.get('http://localhost:8080/api/subscribe', {
+    const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscribe`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
@@ -207,7 +207,7 @@ async function requestAddRepository(repositoryUrl) {
   const accessToken = authStore.accessToken;
 
 
-  const response = await axios.post('http://localhost:8080/api/subscribe',
+  const response = await axios.post(`${process.env.VUE_APP_API_URL}/subscribe`,
       {
         repositoryUrl: repositoryUrl
       },

@@ -11,7 +11,7 @@ const authStore = useAuthStore();
 
 async function fetchJWT(code) {
   try {
-    const response = await axios.get('http://localhost:8080/api/login', {
+    const response = await axios.get(`${process.env.VUE_APP_API_URL}/login`, {
       params: { code }
     });
     const { jwt, userName, avatarURL } = response.data;
