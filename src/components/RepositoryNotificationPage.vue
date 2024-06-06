@@ -48,7 +48,7 @@ export default defineComponent({
 }
 
 .error {
-  background-color: #ff5566;
+  background-color: #EF4444;
 }
 
 .notification-content {
