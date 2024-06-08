@@ -1,9 +1,23 @@
 <template>
   <header v-if="!$route.meta.hideHeader" class="bg-white">
-    <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+    <nav aria-label="Global" class="flex w-full items-center justify-between py-4 lg:px-8 bg-gray-50">
       <div class="flex items-center lg:flex-1">
-        <router-link to="/">
-          <img alt="issuefy logo" class="h-14 w-auto" src="./assets/issuefy_logo.png"/>
+        <router-link to="/" class="flex items-center">
+          <img alt="issuefy logo" class="h-16 w-auto" src="./assets/issuefy-removebg_logo.png"/>
+          <div v-if="$route.meta.showBreadcrumbs" class="ml-4 flex items-center space-x-2">
+            <router-link :to="`/${$route.params.org}`" class="text-sm font-medium text-gray-900 hover:text-blue-600">
+              {{ $route.params.org }}
+            </router-link>
+            <span class="text-sm font-medium text-gray-500">/</span>
+            <router-link :to="`/${$route.params.org}/${$route.params.repository}`"
+                         class="text-sm font-medium text-gray-900 hover:text-blue-600">
+              {{ $route.params.repository }}
+            </router-link>
+            <span v-if="$route.params.issueId" class="text-sm font-medium text-gray-500">/</span>
+            <span v-if="$route.params.issueId" class="text-sm font-medium text-gray-900">
+              {{ $route.meta.issueTitle }}
+            </span>
+          </div>
         </router-link>
       </div>
       <div v-if="isLoggedIn" class="hidden lg:flex lg:items-center lg:gap-x-6">
@@ -76,7 +90,6 @@
   </header>
   <router-view></router-view>
 </template>
-
 <script setup>
 import {computed, ref} from 'vue'
 import {Dialog, DialogPanel} from '@headlessui/vue'
