@@ -75,7 +75,7 @@
 
 <script>
 import {computed, defineComponent, onMounted, ref} from 'vue';
-import {useAuthStore, useStarStore} from '@/store/pinia';
+import {useAuthStore, useRepositoryStore, useStarStore} from '@/store/pinia';
 import {useRoute} from 'vue-router';
 import clickOutside from '@/directives/clickOutside';
 import axios from 'axios';
@@ -102,10 +102,11 @@ export default defineComponent({
     const hideListName = computed(() => route.meta.hideListName);
     const adding = ref(false);
     const newRepositoryUrl = ref('');
-    const repositories = ref([]);
     const showNotification = ref(false);
     const notificationType = ref('success');
     const notificationMessage = ref('');
+    const repositoriesStore = useRepositoryStore();
+    const repositories = computed(() => repositoriesStore.repositories);
 
     const filteredRepositories = computed(() => {
       return props.starred
@@ -232,6 +233,7 @@ export default defineComponent({
 async function getRepositories() {
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
+  const repositoriesStore = useRepositoryStore();
 
   try {
     const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscribe`, {
@@ -240,7 +242,20 @@ async function getRepositories() {
       }
     });
 
-    return response.data;
+    const repositories = response.data.map(org => ({
+      ...org,
+      org: {
+        ...org.org,
+        repositories: org.org.repositories.map(repo => ({
+          ...repo,
+          selected: false
+        }))
+      }
+    }));
+
+    repositoriesStore.setRepositories(repositories);
+    console.log(repositories)
+    return repositories;
   } catch (error) {
     console.error('Error fetching repositories:', error);
     return error;
@@ -250,7 +265,6 @@ async function getRepositories() {
 async function requestAddRepository(repositoryUrl) {
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
-
 
   const response = await axios.post(`${process.env.VUE_APP_API_URL}/subscribe`,
       {
