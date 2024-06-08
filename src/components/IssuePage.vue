@@ -22,12 +22,16 @@
       <div class="w-1/3 text-left text-base">
         <div class="tags">
           <span v-for="tag in issue.tags" :key="tag"
-                class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">{{ tag }}</span>
+                class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">{{
+              tag
+            }}</span>
         </div>
       </div>
       <div class="w-1/3 text-center">
         <span class="status text-sm font-semibold"
-              :class="{'text-green-500': issue.status === 'open', 'text-red-500': issue.status === 'closed'}">{{ issue.status }}</span>
+              :class="{'text-green-500': issue.status === 'open', 'text-red-500': issue.status === 'closed'}">{{
+            issue.status
+          }}</span>
         <p class="text-sm text-gray-600">{{ issue.updatedAt }}</p>
       </div>
     </div>
@@ -35,9 +39,9 @@
 </template>
 
 <script>
-import { defineComponent, computed } from 'vue';
-import { useStarStore } from '@/store/pinia';
-import { useRoute } from "vue-router";
+import {computed, defineComponent} from 'vue';
+import {useStarStore} from '@/store/pinia';
+import {useRoute} from "vue-router";
 
 export default defineComponent({
   name: 'IssueList',
@@ -61,8 +65,8 @@ export default defineComponent({
     const hideListName = computed(() => route.meta.hideListName)
     const filteredIssues = computed(() => {
       return props.starred
-        ? store.issues.filter(issue => issue.star)
-        : store.issues;
+          ? store.issues.filter(issue => issue.star)
+          : store.issues;
     });
 
     const toggleStar = (id) => {
