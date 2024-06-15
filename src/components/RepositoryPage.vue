@@ -236,7 +236,7 @@ async function getRepositories() {
   const repositoriesStore = useRepositoryStore();
 
   try {
-    const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscribe`, {
+    const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscription`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
@@ -266,7 +266,7 @@ async function requestAddRepository(repositoryUrl) {
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
-  const response = await axios.post(`${process.env.VUE_APP_API_URL}/subscribe`,
+  const response = await axios.post(`${process.env.VUE_APP_API_URL}/subscription`,
       {
         repositoryUrl: repositoryUrl
       },
@@ -284,7 +284,7 @@ async function deleteRepository(repositoryId) {
   const accessToken = authStore.accessToken;
 
   try {
-    await axios.delete(`${process.env.VUE_APP_API_URL}/subscribe/${repositoryId}`, {
+    await axios.delete(`${process.env.VUE_APP_API_URL}/subscription/${repositoryId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
