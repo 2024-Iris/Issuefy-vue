@@ -9,8 +9,9 @@ import { faCircleExclamation, faCheck } from '@fortawesome/free-solid-svg-icons'
 import {createPinia} from "pinia";
 import clickOutside from './directives/clickOutside';
 import {useAuthStore} from "@/store/pinia";
+import { faBell } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faGithub, faCircleExclamation, faCheck)
+library.add(faGithub, faCircleExclamation, faCheck, faBell)
 
 const app = createApp(App);
 const pinia = createPinia()
