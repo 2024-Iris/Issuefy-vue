@@ -30,11 +30,17 @@
             </span>
           </button>
           <div v-if="showNotifications" v-click-outside="closeNotifications"
-               class="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg">
-            <div v-for="notification in notifications" :key="notification.id" class="p-4 border-b border-gray-200">
-              {{ notification.message }}
+               class="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+            <div v-if="notifications.length > 0">
+              <div v-for="notification in notifications" :key="notification.localDateTime"
+                   :class="['p-4 border-b border-gray-200', {'bg-gray-100': !notification.read}]">
+                <div class="flex justify-between items-start">
+                  <span :class="{'font-semibold': !notification.read}">{{ notification.message }}</span>
+                  <span class="text-xs text-gray-500 ml-2">{{ notification.formattedTime }}</span>
+                </div>
+              </div>
             </div>
-            <div v-if="notifications.length === 0" class="p-4 text-gray-500">
+            <div v-else class="p-4 text-gray-500">
               알림이 없습니다.
             </div>
           </div>
@@ -55,122 +61,161 @@
       <div v-else class="flex justify-end flex-1">
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/login">Login</router-link>
       </div>
-      <div v-if="isLoggedIn" class="flex lg:hidden">
-        <button class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" type="button"
-                @click="mobileMenuOpen = true">
-          <span class="sr-only">Open main menu</span>
-          <Bars3Icon aria-hidden="true" class="h-6 w-6"/>
-        </button>
-      </div>
     </nav>
-    <Dialog :open="mobileMenuOpen" as="div" class="lg:hidden" @close="mobileMenuOpen = false">
-      <div class="fixed inset-0 z-10"/>
-      <DialogPanel
-          class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-        <div class="flex items-center justify-between">
-          <router-link to="/" class="-m-1.5 p-1.5">
-            <img alt="issuefy logo" class="h-8 w-auto" src="./assets/issuefy_logo.png"/>
-          </router-link>
-          <button class="-m-2.5 rounded-md p-2.5 text-gray-700" type="button" @click="mobileMenuOpen = false">
-            <span class="sr-only">Close menu</span>
-            <XMarkIcon aria-hidden="true" class="h-6 w-6"/>
-          </button>
-        </div>
-        <div class="mt-6 flow-root">
-          <div class="-my-6 divide-y divide-gray-500/10">
-            <div class="space-y-2 py-6">
-              <router-link
-                  class="block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                  to="/">Home
-              </router-link>
-              <router-link
-                  class="block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                  to="/repositories">Repositories
-              </router-link>
-              <router-link
-                  class="block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                  to="/settings">Settings
-              </router-link>
-              <router-link
-                  class="block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                  to="/logout">Log out
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </DialogPanel>
-    </Dialog>
   </header>
   <router-view></router-view>
 </template>
 
-<script setup>
-import { computed, onMounted, ref } from 'vue';
-import { Dialog, DialogPanel } from '@headlessui/vue';
-import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
+<script>
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/store/pinia';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
+import axios from 'axios';
 
-const authStore = useAuthStore();
-const isLoggedIn = computed(() => authStore.isLoggedIn);
-const userName = computed(() => authStore.userName);
-const avatarURL = computed(() => authStore.avatarURL);
-const accessToken = authStore.accessToken;
+export default {
+  setup() {
+    const authStore = useAuthStore();
+    const route = useRoute();
+    const isLoggedIn = computed(() => authStore.isLoggedIn);
+    const userName = computed(() => authStore.userName);
+    const avatarURL = computed(() => authStore.avatarURL);
 
-const mobileMenuOpen = ref(false);
+    const notifications = ref([]);
+    const unreadCount = ref(0);
+    const showNotifications = ref(false);
+    const isConnected = ref(false);
 
-// 알림 관련 상태
-const notifications = ref([]);
-const unreadCount = ref(0);
-const showNotifications = ref(false);
+    let reconnectInterval;
 
-// 알림 아이콘 클릭 핸들러
-const toggleNotifications = () => {
-  showNotifications.value = !showNotifications.value;
-};
+    const formatTime = (isoString) => {
+      if (!isoString) return '';
 
-// 알림 드롭다운 닫기
-const closeNotifications = () => {
-  showNotifications.value = false;
-};
+      const [datePart, timePart] = isoString.split('T');
+      const timeWithoutSeconds = timePart.split(':').slice(0, 2).join(':');
 
-// SSE 설정
-const connectSSE = async () => {
-  try {
-    await fetchEventSource(`${process.env.VUE_APP_API_URL}/connect`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      },
-      onopen(response) {
-        if (response.ok && response.headers.get('content-type') === 'text/event-stream') {
-          console.log('Fetch Event Source connection opened.');
-        } else {
-          console.error('Fetch Event Source connection failed.', response);
-        }
-      },
-      onmessage(event) {
-        // 받은 메시지를 notifications 상태에 추가
-        notifications.value.push({ id: new Date().getTime(), message: event.data});
-        unreadCount.value++;
-      },
-      onclose() {
-        console.log('Fetch Event Source connection closed.');
-      },
-      onerror(err) {
-        console.error('Fetch Event Source connection error:', err);
-        throw err; // 연결 재시도를 위해 예외 발생
-      },
+      return `${datePart} ${timeWithoutSeconds}`;
+    };
+
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_URL}/notifications`, {
+          headers: {
+            'Authorization': `Bearer ${authStore.accessToken}`
+          }
+        });
+        notifications.value = response.data
+          .map(notification => ({
+            ...notification,
+            formattedTime: formatTime(notification.localDateTime)
+          }))
+          .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+        unreadCount.value = notifications.value.filter(n => !n.read).length;
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    const toggleNotifications = async () => {
+      showNotifications.value = !showNotifications.value;
+      if (showNotifications.value) {
+        await fetchNotifications();
+      }
+    };
+
+    const closeNotifications = () => {
+      showNotifications.value = false;
+    };
+
+    const connectSSE = async () => {
+      if (!isLoggedIn.value || route.meta.hideHeader || isConnected.value) return;
+
+      const accessToken = authStore.accessToken;
+
+      try {
+        await fetchEventSource(`${process.env.VUE_APP_API_URL}/connect`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
+          onopen(response) {
+            if (response.ok && response.headers.get('content-type') === 'text/event-stream') {
+              console.log('SSE connection opened.');
+              isConnected.value = true;
+            } else {
+              console.error('SSE connection failed.', response);
+              isConnected.value = false;
+            }
+          },
+          onmessage(event) {
+            try {
+              const data = JSON.parse(event.data);
+              if (data.unreadCount !== undefined) {
+                unreadCount.value = data.unreadCount;
+              }
+              if (data.message) {
+                const newNotification = {
+                  ...data,
+                  formattedTime: formatTime(data.localDateTime)
+                };
+                notifications.value = [newNotification, ...notifications.value]
+                  .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+                unreadCount.value++;
+              }
+            } catch (error) {
+              console.error('Error parsing SSE message:', error);
+            }
+          },
+          onclose() {
+            console.log('SSE connection closed.');
+            isConnected.value = false;
+          },
+          onerror(err) {
+            console.error('SSE connection error:', err);
+            isConnected.value = false;
+          },
+        });
+      } catch (err) {
+        console.error('SSE connection error:', err);
+        isConnected.value = false;
+      }
+    };
+
+    onMounted(() => {
+      if (!route.meta.hideHeader) {
+        connectSSE();
+        reconnectInterval = setInterval(() => {
+          if (!isConnected.value) {
+            connectSSE();
+          }
+        }, 61000);
+      }
     });
-  } catch (err) {
-    console.error('Fetch Event Source error:', err);
+
+    onUnmounted(() => {
+      if (reconnectInterval) {
+        clearInterval(reconnectInterval);
+      }
+    });
+
+    watch(() => route.meta.hideHeader, (newVal) => {
+      if (!newVal && !isConnected.value) {
+        connectSSE();
+      }
+    });
+
+    return {
+      isLoggedIn,
+      userName,
+      avatarURL,
+      notifications,
+      unreadCount,
+      showNotifications,
+      toggleNotifications,
+      closeNotifications,
+      formatTime
+    };
   }
 };
-
-onMounted(() => {
-  if (isLoggedIn.value) {
-    connectSSE();
-  }
-});
 </script>
 
 <style scoped>
