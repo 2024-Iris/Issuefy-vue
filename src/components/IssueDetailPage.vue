@@ -17,7 +17,7 @@
       </div>
       <div class="border-t border-gray-200">
         <div class="px-4 py-5 sm:p-6">
-          <div class="mt-1 text-sm text-gray-900" v-html="issue.body"></div>
+          <div class="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{{ issue.body }}</div>
         </div>
         <div v-if="issue.labels.length > 0" class="px-4 py-4 sm:px-6">
           <span v-for="label in issue.labels" :key="label"
@@ -38,7 +38,7 @@
             <div class="text-sm font-medium text-gray-900">{{ comment.author }}</div>
             <div class="text-sm text-gray-500">{{ comment.createdAt }}</div>
           </div>
-          <div class="mt-1 text-sm text-gray-900" v-html="comment.body"></div>
+          <div class="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{{ comment.body }}</div>
         </div>
       </div>
     </div>
@@ -57,14 +57,14 @@ export default {
         status: 'open',
         author: '로이',
         createdAt: '2023-06-08',
-        body: '<p>테스트 이슈 바디입니다.</p>',
+        body: '테스트 이슈 바디입니다.',
         labels: ['bug', 'enhancement'],
         comments: [
           {
             id: 1,
             author: '하나',
             createdAt: '2023-06-09',
-            body: '<p>첫번째 댓글입니다!</p>',
+            body: '첫번째 댓글입니다!',
           },
         ],
       },
