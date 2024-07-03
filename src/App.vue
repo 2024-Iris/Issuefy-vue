@@ -33,11 +33,11 @@
                class="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto">
             <div v-if="visibleNotifications.length > 0">
               <div v-for="notification in visibleNotifications" :key="notification.userNotificationId"
-                   :class="['p-4 border-b border-gray-200', {'bg-gray-100': !notification.read}]">
+                   :class="['p-4 border-b border-gray-200', {'bg-gray-50': !notification.read}]">
                 <div class="flex flex-col">
                   <div class="flex justify-between items-start mb-2">
                     <span :class="{'font-semibold': !notification.read}" class="mr-2">
-                      <router-link :to="`/${notification.orgName}/${notification.repositoryName}/issues`" class="text-blue-600 hover:underline">
+                      <router-link :to="`/${notification.orgName}/${notification.repositoryName}/issues`" class="text-purple-500 hover:text-purple-700">
                         {{ notification.repositoryName }}
                       </router-link>
                       에 새로운 이슈가 추가되었어요!
@@ -46,21 +46,21 @@
                   <div class="flex justify-between items-center">
                     <span class="text-xs text-gray-500">{{ notification.formattedTime }}</span>
                     <button v-if="!notification.read" @click="markAsRead(notification.userNotificationId)"
-                            class="text-xs text-blue-600 hover:text-blue-800">
+                            class="text-xs text-purple-500 hover:text-purple-700">
                       읽음
                     </button>
                   </div>
                 </div>
               </div>
               <div v-if="notifications.length > visibleNotifications.length" class="p-2 text-center">
-                <button @click.stop="loadMoreNotifications" class="text-blue-600 hover:underline">더 보기</button>
+                <button @click.stop="loadMoreNotifications" class="text-purple-500 hover:text-purple-700">더 보기</button>
               </div>
             </div>
             <div v-else class="p-4 text-gray-500">
               알림이 없습니다.
             </div>
             <div class="p-2 border-t border-gray-200">
-              <button @click="markAllAsRead" class="w-full text-center text-blue-600 hover:underline">모두 읽음</button>
+              <button @click="markAllAsRead" class="w-full text-center text-purple-500 hover:text-purple-700">모두 읽음</button>
             </div>
           </div>
         </div>
