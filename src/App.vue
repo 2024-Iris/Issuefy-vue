@@ -31,17 +31,36 @@
           </button>
           <div v-if="showNotifications" v-click-outside="closeNotifications"
                class="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto">
-            <div v-if="notifications.length > 0">
-              <div v-for="notification in notifications" :key="notification.localDateTime"
+            <div v-if="visibleNotifications.length > 0">
+              <div v-for="notification in visibleNotifications" :key="notification.userNotificationId"
                    :class="['p-4 border-b border-gray-200', {'bg-gray-100': !notification.read}]">
-                <div class="flex justify-between items-start">
-                  <span :class="{'font-semibold': !notification.read}">{{ notification.message }}</span>
-                  <span class="text-xs text-gray-500 ml-2">{{ notification.formattedTime }}</span>
+                <div class="flex flex-col">
+                  <div class="flex justify-between items-start mb-2">
+                    <span :class="{'font-semibold': !notification.read}" class="mr-2">
+                      <router-link :to="`/${notification.orgName}/${notification.repositoryName}/issues`" class="text-blue-600 hover:underline">
+                        {{ notification.repositoryName }}
+                      </router-link>
+                      에 새로운 이슈가 추가되었어요!
+                    </span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500">{{ notification.formattedTime }}</span>
+                    <button v-if="!notification.read" @click="markAsRead(notification.userNotificationId)"
+                            class="text-xs text-blue-600 hover:text-blue-800">
+                      읽음
+                    </button>
+                  </div>
                 </div>
+              </div>
+              <div v-if="notifications.length > visibleNotifications.length" class="p-2 text-center">
+                <button @click.stop="loadMoreNotifications" class="text-blue-600 hover:underline">더 보기</button>
               </div>
             </div>
             <div v-else class="p-4 text-gray-500">
               알림이 없습니다.
+            </div>
+            <div class="p-2 border-t border-gray-200">
+              <button @click="markAllAsRead" class="w-full text-center text-blue-600 hover:underline">모두 읽음</button>
             </div>
           </div>
         </div>
@@ -67,10 +86,10 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { useAuthStore } from '@/store/pinia';
-import { fetchEventSource } from '@microsoft/fetch-event-source';
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
+import {useRoute} from 'vue-router';
+import {useAuthStore} from '@/store/pinia';
+import {fetchEventSource} from '@microsoft/fetch-event-source';
 import axios from 'axios';
 
 export default {
@@ -82,9 +101,12 @@ export default {
     const avatarURL = computed(() => authStore.avatarURL);
 
     const notifications = ref([]);
+    const visibleNotifications = ref([]);
     const unreadCount = ref(0);
     const showNotifications = ref(false);
     const isConnected = ref(false);
+    const notificationsPerPage = 5;
+    const currentPage = ref(1);
 
     let reconnectInterval;
 
@@ -97,6 +119,15 @@ export default {
       return `${datePart} ${timeWithoutSeconds}`;
     };
 
+    const loadMoreNotifications = () => {
+      currentPage.value++;
+      updateVisibleNotifications();
+    };
+
+    const updateVisibleNotifications = () => {
+      visibleNotifications.value = notifications.value.slice(0, currentPage.value * notificationsPerPage);
+    };
+
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_URL}/notifications`, {
@@ -105,11 +136,12 @@ export default {
           }
         });
         notifications.value = response.data
-          .map(notification => ({
-            ...notification,
-            formattedTime: formatTime(notification.localDateTime)
-          }))
-          .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+            .map(notification => ({
+              ...notification,
+              formattedTime: formatTime(notification.localDateTime)
+            }))
+            .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+        updateVisibleNotifications();
         unreadCount.value = notifications.value.filter(n => !n.read).length;
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -120,11 +152,54 @@ export default {
       showNotifications.value = !showNotifications.value;
       if (showNotifications.value) {
         await fetchNotifications();
+      } else {
+        // Reset to show only the first 5 notifications when closing
+        currentPage.value = 1;
+        updateVisibleNotifications();
       }
     };
 
     const closeNotifications = () => {
       showNotifications.value = false;
+      // Reset to show only the first 5 notifications when closing
+      currentPage.value = 1;
+      updateVisibleNotifications();
+    };
+
+    const markAsRead = async (userNotificationId) => {
+      try {
+        await axios.patch(`${process.env.VUE_APP_API_URL}/notifications/${userNotificationId}`,
+          { read: true },
+          {
+            headers: {
+              'Authorization': `Bearer ${authStore.accessToken}`
+            }
+          }
+        );
+        const notification = notifications.value.find(n => n.userNotificationId === userNotificationId);
+        if (notification) {
+          notification.read = true;
+          unreadCount.value = Math.max(0, unreadCount.value - 1);
+        }
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    };
+
+    const markAllAsRead = async () => {
+      try {
+        await axios.post(`${process.env.VUE_APP_API_URL}/notifications/read-all`, null, {
+          headers: {
+            'Authorization': `Bearer ${authStore.accessToken}`
+          }
+        });
+        notifications.value.forEach(notification => {
+          notification.read = true;
+        });
+        unreadCount.value = 0;
+      } catch (error) {
+        console.error('Error marking all notifications as read:', error);
+      }
     };
 
     const connectSSE = async () => {
@@ -152,13 +227,14 @@ export default {
               if (data.unreadCount !== undefined) {
                 unreadCount.value = data.unreadCount;
               }
-              if (data.message) {
+              if (data.userNotificationId) {
                 const newNotification = {
                   ...data,
                   formattedTime: formatTime(data.localDateTime)
                 };
                 notifications.value = [newNotification, ...notifications.value]
-                  .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+                    .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+                updateVisibleNotifications();
                 unreadCount.value++;
               }
             } catch (error) {
@@ -208,25 +284,15 @@ export default {
       userName,
       avatarURL,
       notifications,
+      visibleNotifications,
       unreadCount,
       showNotifications,
       toggleNotifications,
       closeNotifications,
-      formatTime
+      loadMoreNotifications,
+      markAsRead,
+      markAllAsRead
     };
   }
 };
 </script>
-
-<style scoped>
-.notification-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  padding: 0.5em;
-  font-size: 0.75em;
-}
-</style>
