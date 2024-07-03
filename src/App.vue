@@ -157,7 +157,6 @@ export default {
       if (showNotifications.value) {
         await fetchNotifications();
       } else {
-        // Reset to show only the first 5 notifications when closing
         currentPage.value = 1;
         updateVisibleNotifications();
       }
@@ -165,7 +164,6 @@ export default {
 
     const closeNotifications = () => {
       showNotifications.value = false;
-      // Reset to show only the first 5 notifications when closing
       currentPage.value = 1;
       updateVisibleNotifications();
     };
