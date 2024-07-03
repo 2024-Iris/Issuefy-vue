@@ -33,14 +33,17 @@
                class="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto">
             <div v-if="visibleNotifications.length > 0">
               <div v-for="notification in visibleNotifications" :key="notification.userNotificationId"
-                   :class="['p-4 border-b border-gray-200', {'bg-gray-50': !notification.read}]">
+                   :class="['p-3 border-b border-gray-200', {'bg-gray-50': !notification.read}]">
                 <div class="flex flex-col">
                   <div class="flex justify-between items-start mb-2">
                     <span :class="{'font-semibold': !notification.read}" class="mr-2">
-                      <router-link :to="`/${notification.orgName}/${notification.repositoryName}/issues`" class="text-purple-500 hover:text-purple-700">
-                        {{ notification.repositoryName }}
+                      <span> 새로운 이슈가 추가되었어요! </span>
+                      <router-link :to="`/${notification.orgName}/${notification.repositoryName}/issues`"
+                                   class="text-purple-500 hover:text-purple-700">
+                        <div>
+                          {{ notification.orgName + ' / ' + notification.repositoryName }}
+                        </div>
                       </router-link>
-                      에 새로운 이슈가 추가되었어요!
                     </span>
                   </div>
                   <div class="flex justify-between items-center">
@@ -60,7 +63,8 @@
               알림이 없습니다.
             </div>
             <div class="p-2 border-t border-gray-200">
-              <button @click="markAllAsRead" class="w-full text-center text-purple-500 hover:text-purple-700">모두 읽음</button>
+              <button @click="markAllAsRead" class="w-full text-center text-purple-500 hover:text-purple-700">모두 읽음
+              </button>
             </div>
           </div>
         </div>
@@ -105,7 +109,7 @@ export default {
     const unreadCount = ref(0);
     const showNotifications = ref(false);
     const isConnected = ref(false);
-    const notificationsPerPage = 5;
+    const notificationsPerPage = 3;
     const currentPage = ref(1);
 
     let reconnectInterval;
@@ -169,12 +173,12 @@ export default {
     const markAsRead = async (userNotificationId) => {
       try {
         await axios.patch(`${process.env.VUE_APP_API_URL}/notifications/${userNotificationId}`,
-          { read: true },
-          {
-            headers: {
-              'Authorization': `Bearer ${authStore.accessToken}`
+            {read: true},
+            {
+              headers: {
+                'Authorization': `Bearer ${authStore.accessToken}`
+              }
             }
-          }
         );
         const notification = notifications.value.find(n => n.userNotificationId === userNotificationId);
         if (notification) {
