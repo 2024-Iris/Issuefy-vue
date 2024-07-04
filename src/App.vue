@@ -62,7 +62,7 @@
             <div v-else class="p-4 text-gray-500">
               알림이 없습니다.
             </div>
-            <div class="p-2 border-t border-gray-200">
+            <div v-if="hasUnreadNotifications" class="p-2 border-t border-gray-200">
               <button @click="markAllAsRead" class="w-full text-center text-purple-500 hover:text-purple-700">모두 읽음
               </button>
             </div>
@@ -111,6 +111,10 @@ export default {
     const isConnected = ref(false);
     const notificationsPerPage = 3;
     const currentPage = ref(1);
+
+    const hasUnreadNotifications = computed(() => {
+      return notifications.value.some(n => !n.read);
+    });
 
     let reconnectInterval;
 
@@ -168,39 +172,42 @@ export default {
       updateVisibleNotifications();
     };
 
-    const markAsRead = async (userNotificationId) => {
+    const markNotificationsAsRead = async (userNotificationIds) => {
       try {
-        await axios.patch(`${process.env.VUE_APP_API_URL}/notifications/${userNotificationId}`,
-            {read: true},
-            {
-              headers: {
-                'Authorization': `Bearer ${authStore.accessToken}`
-              }
+        const response = await axios.patch(
+          `${process.env.VUE_APP_API_URL}/notifications`,
+          { userNotificationIds },
+          {
+            headers: {
+              'Authorization': `Bearer ${authStore.accessToken}`
             }
+          }
         );
-        const notification = notifications.value.find(n => n.userNotificationId === userNotificationId);
-        if (notification) {
-          notification.read = true;
-          unreadCount.value = Math.max(0, unreadCount.value - 1);
+
+        if (response.status === 200) {
+          userNotificationIds.forEach(id => {
+            const notification = notifications.value.find(n => n.userNotificationId === id);
+            if (notification) {
+              notification.read = true;
+            }
+          });
+          unreadCount.value = notifications.value.filter(n => !n.read).length;
         }
       } catch (error) {
-        console.error('Error marking notification as read:', error);
+        console.error('Error marking notifications as read:', error);
       }
     };
 
+    const markAsRead = async (userNotificationId) => {
+      await markNotificationsAsRead([userNotificationId]);
+    };
+
     const markAllAsRead = async () => {
-      try {
-        await axios.post(`${process.env.VUE_APP_API_URL}/notifications/read-all`, null, {
-          headers: {
-            'Authorization': `Bearer ${authStore.accessToken}`
-          }
-        });
-        notifications.value.forEach(notification => {
-          notification.read = true;
-        });
-        unreadCount.value = 0;
-      } catch (error) {
-        console.error('Error marking all notifications as read:', error);
+      const unreadNotificationIds = notifications.value
+        .filter(n => !n.read)
+        .map(n => n.userNotificationId);
+      if (unreadNotificationIds.length > 0) {
+        await markNotificationsAsRead(unreadNotificationIds);
       }
     };
 
@@ -289,6 +296,7 @@ export default {
       visibleNotifications,
       unreadCount,
       showNotifications,
+      hasUnreadNotifications,
       toggleNotifications,
       closeNotifications,
       loadMoreNotifications,
