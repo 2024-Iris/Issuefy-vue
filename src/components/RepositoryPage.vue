@@ -1,5 +1,5 @@
 <template>
-  <div v-if="repositories.length" class="container mx-auto mt-6 max-w-7xl font-sans">
+  <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
       <div v-if="!hideListName">
         <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
@@ -28,10 +28,18 @@
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
           리포지토리 추가
         </button>
+        <button v-if="hasSelectedRepositories" @click="deleteSelectedRepositories"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-sm">
+          리포지토리 삭제
+        </button>
       </div>
     </div>
 
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
+      <div class="w-1/12 text-left">
+        <input type="checkbox" v-model="allSelected" @change="toggleSelectAll">
+      </div>
+
       <div class="w-1/3 text-left text-base">조직 이름</div>
       <div class="w-1/3 text-left text-base">리포지토리 이름</div>
       <div class="w-1/3 text-center text-base">최근 업데이트</div>
@@ -40,6 +48,9 @@
     <div v-for="org in repositories" :key="org.org.id">
       <div v-for="repository in org.org.repositories" :key="repository.id"
            class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
+        <div class="w-1/12 text-left">
+          <input type="checkbox" v-model="repository.selected">
+        </div>
         <div class="w-1/3 text-left flex items-center">
           <button @click="toggleStar(repository.id)" class="text-yellow-500 mr-2">
             {{ repository.star ? '★' : '☆' }}
@@ -64,7 +75,7 @@
 
 <script>
 import {computed, defineComponent, onMounted, ref} from 'vue';
-import {useAuthStore, useStarStore} from '@/store/pinia';
+import {useAuthStore, useRepositoryStore, useStarStore} from '@/store/pinia';
 import {useRoute} from 'vue-router';
 import clickOutside from '@/directives/clickOutside';
 import axios from 'axios';
@@ -91,10 +102,11 @@ export default defineComponent({
     const hideListName = computed(() => route.meta.hideListName);
     const adding = ref(false);
     const newRepositoryUrl = ref('');
-    const repositories = ref([]);
     const showNotification = ref(false);
     const notificationType = ref('success');
     const notificationMessage = ref('');
+    const repositoriesStore = useRepositoryStore();
+    const repositories = computed(() => repositoriesStore.repositories);
 
     const filteredRepositories = computed(() => {
       return props.starred
@@ -161,6 +173,36 @@ export default defineComponent({
       }
     };
 
+    const allSelected = ref(false);
+
+    const toggleSelectAll = () => {
+      repositories.value.forEach(org => {
+        org.org.repositories.forEach(repo => {
+          repo.selected = allSelected.value;
+        });
+      });
+    };
+
+    const hasSelectedRepositories = computed(() => {
+      return repositories.value.some(org => org.org.repositories.some(repo => repo.selected));
+    });
+
+    const deleteSelectedRepositories = async () => {
+      const selectedRepoIds = repositories.value.flatMap(org =>
+          org.org.repositories.filter(repo => repo.selected).map(repo => repo.id)
+      );
+
+      try {
+        await Promise.all(selectedRepoIds.map(repoId => deleteRepository(repoId)));
+        showNotificationMessage('success', '선택한 리포지토리가 삭제되었습니다.');
+        repositories.value = await getRepositories();
+        allSelected.value = false;
+      } catch (error) {
+        console.error('Error deleting repositories:', error);
+        showNotificationMessage('error', '리포지토리 삭제 중 오류가 발생했습니다.');
+      }
+    };
+
     onMounted(async () => {
       repositories.value = await getRepositories();
     });
@@ -179,7 +221,11 @@ export default defineComponent({
       notificationType,
       notificationMessage,
       showNotificationMessage,
-      addRepository
+      addRepository,
+      allSelected,
+      toggleSelectAll,
+      hasSelectedRepositories,
+      deleteSelectedRepositories
     };
   }
 });
@@ -187,15 +233,29 @@ export default defineComponent({
 async function getRepositories() {
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
+  const repositoriesStore = useRepositoryStore();
 
   try {
-    const response = await axios.get('http://localhost:8080/api/subscribe', {
+    const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscription`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     });
 
-    return response.data;
+    const repositories = response.data.map(org => ({
+      ...org,
+      org: {
+        ...org.org,
+        repositories: org.org.repositories.map(repo => ({
+          ...repo,
+          selected: false
+        }))
+      }
+    }));
+
+    repositoriesStore.setRepositories(repositories);
+    console.log(repositories)
+    return repositories;
   } catch (error) {
     console.error('Error fetching repositories:', error);
     return error;
@@ -206,8 +266,7 @@ async function requestAddRepository(repositoryUrl) {
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
-
-  const response = await axios.post('http://localhost:8080/api/subscribe',
+  const response = await axios.post(`${process.env.VUE_APP_API_URL}/subscription`,
       {
         repositoryUrl: repositoryUrl
       },
@@ -220,6 +279,22 @@ async function requestAddRepository(repositoryUrl) {
   return response.data;
 }
 
+async function deleteRepository(repositoryId) {
+  const authStore = useAuthStore();
+  const accessToken = authStore.accessToken;
+
+  try {
+    await axios.delete(`${process.env.VUE_APP_API_URL}/subscription/${repositoryId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  } catch (error) {
+    console.error('Error deleting repository:', error);
+    throw error;
+  }
+}
+
 function validateGithubUrl(url) {
   const githubUrlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+/;
   return githubUrlPattern.test(url);
@@ -227,6 +302,11 @@ function validateGithubUrl(url) {
 </script>
 
 <style scoped>
+input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+}
+
 .repository {
   transition: background-color 0.3s;
 }

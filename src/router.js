@@ -11,6 +11,7 @@ import SettingPage from "@/components/SettingPage.vue";
 import IssuePage from "@/components/IssuePage.vue";
 import axios from "axios";
 import ExpiredPage from "@/components/ExpiredPage.vue";
+import IssueDetailPage from "@/components/IssueDetailPage.vue";
 
 const routes = [
     {
@@ -40,6 +41,15 @@ const routes = [
         meta: {
             requiresAuth: true,
             hideListName: false
+        },
+        props: true
+    },
+    {
+        path: '/:org/:repository/issues/:issueId',
+        name: 'issueDetail',
+        component: IssueDetailPage,
+        meta: {
+            requiresAuth: true,
         },
         props: true
     },

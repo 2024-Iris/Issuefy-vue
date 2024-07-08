@@ -1,6 +1,6 @@
 <script setup>
 const clientId = '7f03dbd8bbe40313788e'; // GitHub에서 발급받은 Client ID
-const redirectUri = encodeURIComponent('http://localhost:3000/callback'); // 등록한 리디렉션 URI
+const redirectUri = encodeURIComponent(`${process.env.VUE_APP_CALLBACK_URL}`); // 등록한 리디렉션 URI
 
 function handleGitHubLogin() {
   // GitHub 로그인 페이지로 리디렉션

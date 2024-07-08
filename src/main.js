@@ -2,15 +2,15 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router'
 import '../style.css';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {faGithub} from '@fortawesome/free-brands-svg-icons'
-import { faCircleExclamation, faCheck } from '@fortawesome/free-solid-svg-icons'
+import {faBell, faCheck, faCircleExclamation} from '@fortawesome/free-solid-svg-icons'
 import {createPinia} from "pinia";
 import clickOutside from './directives/clickOutside';
 import {useAuthStore} from "@/store/pinia";
 
-library.add(faGithub, faCircleExclamation, faCheck)
+library.add(faGithub, faCircleExclamation, faCheck, faBell)
 
 const app = createApp(App);
 const pinia = createPinia()

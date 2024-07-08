@@ -120,3 +120,14 @@ export const useStarStore = defineStore('star', {
         }
     }
 });
+
+export const useRepositoryStore = defineStore('repository', {
+    state: () => ({
+        repositories: [],
+    }),
+    actions: {
+        setRepositories(repositories) {
+            this.repositories = repositories;
+        }
+    }
+})
