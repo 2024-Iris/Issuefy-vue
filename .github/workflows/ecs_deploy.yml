@@ -48,7 +48,7 @@ jobs:
 
       - name: Copy .env files
         run: |
-          cp .env.prod .env.production
+          cp submodules/.env.prod .env.prod
 
       - name: Build
         run: npm run build
