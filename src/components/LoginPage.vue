@@ -1,6 +1,6 @@
 <script setup>
 const clientId = process.env.VUE_APP_GITHUB_CLIENT_ID;
-const redirectUri = encodeURIComponent(`${process.env.VUE_APP_CALLBACK_URL}`); // 등록한 리디렉션 URI
+const redirectUri = encodeURIComponent(`${process.env.VUE_APP_CALLBACK_URL}`);
 
 function handleGitHubLogin() {
   // GitHub 로그인 페이지로 리디렉션
