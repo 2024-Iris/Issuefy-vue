@@ -1,5 +1,5 @@
 <script setup>
-const clientId = '7f03dbd8bbe40313788e'; // GitHub에서 발급받은 Client ID
+const clientId = process.env.VUE_APP_GITHUB_CLIENT_ID;
 const redirectUri = encodeURIComponent(`${process.env.VUE_APP_CALLBACK_URL}`); // 등록한 리디렉션 URI
 
 function handleGitHubLogin() {
