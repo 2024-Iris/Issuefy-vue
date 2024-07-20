@@ -7,7 +7,7 @@
         <p class="text-lg mb-8">다시 로그인해주세요.</p>
       </div>
       <div class="text-left">
-        <router-link to="/login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+        <router-link class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm" to="/login">
           로그인
         </router-link>
       </div>

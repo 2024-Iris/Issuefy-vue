@@ -5,8 +5,8 @@
         <div class="flex justify-between items-center">
           <h1 class="text-lg leading-6 font-medium text-gray-900">{{ issue.title }}</h1>
           <div>
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                  :class="{'bg-green-100 text-green-800': issue.status === 'open', 'bg-red-100 text-red-800': issue.status === 'closed'}">
+            <span :class="{'bg-green-100 text-green-800': issue.status === 'open', 'bg-red-100 text-red-800': issue.status === 'closed'}"
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
               {{ issue.status }}
             </span>
           </div>
@@ -21,8 +21,8 @@
         </div>
         <div v-if="issue.labels.length > 0" class="px-4 py-4 sm:px-6">
           <span v-for="label in issue.labels" :key="label"
-                class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium leading-5 mr-2"
-                :style="{ backgroundColor: getColorForLabel(label), color: getTextColorForLabel(label) }">
+                :style="{ backgroundColor: getColorForLabel(label), color: getTextColorForLabel(label) }"
+                class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium leading-5 mr-2">
             {{ label }}
           </span>
         </div>

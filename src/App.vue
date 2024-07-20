@@ -2,7 +2,7 @@
   <header v-if="!$route.meta.hideHeader" class="bg-white">
     <nav aria-label="Global" class="flex w-full items-center justify-between py-4 lg:px-8 bg-gray-50">
       <div class="flex items-center lg:flex-1">
-        <router-link to="/" class="flex items-center">
+        <router-link class="flex items-center" to="/">
           <img alt="issuefy logo" class="h-16 w-auto" src="./assets/issuefy-removebg_logo.png"/>
           <div v-if="$route.meta.showBreadcrumbs" class="ml-4 flex items-center space-x-2">
             <router-link :to="`/${$route.params.org}`" class="text-sm font-medium text-gray-900 hover:text-blue-600">
@@ -22,7 +22,7 @@
       </div>
       <div v-if="isLoggedIn" class="hidden lg:flex lg:items-center lg:gap-x-6">
         <div class="relative">
-          <button @click="toggleNotifications" class="relative">
+          <button class="relative" @click="toggleNotifications">
             <font-awesome-icon icon="bell" style="color: #B197FC;"/>
             <span v-if="unreadCount > 0"
                   class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
@@ -48,22 +48,22 @@
                   </div>
                   <div class="flex justify-between items-center">
                     <span class="text-xs text-gray-500">{{ notification.formattedTime }}</span>
-                    <button v-if="!notification.read" @click="markAsRead(notification.userNotificationId)"
-                            class="text-xs text-purple-500 hover:text-purple-700">
+                    <button v-if="!notification.read" class="text-xs text-purple-500 hover:text-purple-700"
+                            @click="markAsRead(notification.userNotificationId)">
                       읽음
                     </button>
                   </div>
                 </div>
               </div>
               <div v-if="notifications.length > visibleNotifications.length" class="p-2 text-center">
-                <button @click.stop="loadMoreNotifications" class="text-purple-500 hover:text-purple-700">더 보기</button>
+                <button class="text-purple-500 hover:text-purple-700" @click.stop="loadMoreNotifications">더 보기</button>
               </div>
             </div>
             <div v-else class="p-4 text-gray-500">
               알림이 없습니다.
             </div>
             <div v-if="hasUnreadNotifications" class="p-2 border-t border-gray-200">
-              <button @click="markAllAsRead" class="w-full text-center text-purple-500 hover:text-purple-700">모두 읽음
+              <button class="w-full text-center text-purple-500 hover:text-purple-700" @click="markAllAsRead">모두 읽음
               </button>
             </div>
           </div>
@@ -74,8 +74,8 @@
       <div v-if="isLoggedIn" class="mx-5"></div>
       <div v-if="isLoggedIn" class="flex items-center gap-x-4">
         <div class="flex items-center space-x-2">
-          <img :src="avatarURL" class="w-10 h-10 rounded-full" alt="User Avatar">
-          <router-link to="/settings" class="text-sm font-semibold leading-6 text-blue-600 hover:underline">
+          <img :src="avatarURL" alt="User Avatar" class="w-10 h-10 rounded-full">
+          <router-link class="text-sm font-semibold leading-6 text-blue-600 hover:underline" to="/settings">
             {{ userName }}
           </router-link>
         </div>
@@ -175,13 +175,13 @@ export default {
     const markNotificationsAsRead = async (userNotificationIds) => {
       try {
         const response = await axios.patch(
-          `${process.env.VUE_APP_API_URL}/notifications`,
-          { userNotificationIds },
-          {
-            headers: {
-              'Authorization': `Bearer ${authStore.accessToken}`
+            `${process.env.VUE_APP_API_URL}/notifications`,
+            {userNotificationIds},
+            {
+              headers: {
+                'Authorization': `Bearer ${authStore.accessToken}`
+              }
             }
-          }
         );
 
         if (response.status === 200) {
@@ -204,8 +204,8 @@ export default {
 
     const markAllAsRead = async () => {
       const unreadNotificationIds = notifications.value
-        .filter(n => !n.read)
-        .map(n => n.userNotificationId);
+          .filter(n => !n.read)
+          .map(n => n.userNotificationId);
       if (unreadNotificationIds.length > 0) {
         await markNotificationsAsRead(unreadNotificationIds);
       }
