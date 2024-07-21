@@ -3,7 +3,6 @@ const clientId = process.env.VUE_APP_GITHUB_CLIENT_ID;
 const redirectUri = encodeURIComponent(`${process.env.VUE_APP_CALLBACK_URL}`);
 
 function handleGitHubLogin() {
-  // GitHub 로그인 페이지로 리디렉션
   window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`;
 }
 
