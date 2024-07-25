@@ -5,22 +5,25 @@ export const useAuthStore = defineStore('auth', {
         accessToken: null,
         refreshToken: null,
         userName: null,
+        userEmail: null,
         avatarURL: null
     }),
     getters: {
         isLoggedIn: (state) => !!state.accessToken,
     },
     actions: {
-        setCredentials(accessToken, refreshToken, userName, avatarURL) {
+        setCredentials(accessToken, refreshToken, userName, userEmail, avatarURL) {
             this.$patch({
                 accessToken,
                 refreshToken,
                 userName,
+                userEmail,
                 avatarURL
             });
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userName', userName);
+            localStorage.setItem('userEmail', userEmail);
             localStorage.setItem('avatarURL', avatarURL);
         },
         clearCredentials() {
@@ -28,11 +31,13 @@ export const useAuthStore = defineStore('auth', {
                 accessToken: null,
                 refreshToken: null,
                 userName: null,
+                userEmail: null,
                 avatarURL: null
             });
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
             localStorage.removeItem('avatarURL');
         },
         initCredentials() {
@@ -40,12 +45,14 @@ export const useAuthStore = defineStore('auth', {
             const refreshToken = localStorage.getItem('refreshToken');
             const userName = localStorage.getItem('userName');
             const avatarURL = localStorage.getItem('avatarURL');
+            const userEmail = localStorage.getItem('userEmail');
 
-            if (accessToken && refreshToken && userName && avatarURL) {
+            if (accessToken && refreshToken && userName && userEmail && avatarURL) {
                 this.$patch({
                     accessToken,
                     refreshToken,
                     userName,
+                    userEmail,
                     avatarURL
                 });
             }

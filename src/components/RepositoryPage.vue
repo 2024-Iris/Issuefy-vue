@@ -2,7 +2,7 @@
   <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
       <div v-if="!hideListName">
-        <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
+        <h1 class="text-lg text-left font-bold">리포지토리 목록</h1>
       </div>
       <div v-if="!hideAddBox" class="flex items-center space-x-4 w-2/3 justify-end">
         <div v-if="adding" v-click-outside="cancelAdding" class="flex items-center space-x-2">
