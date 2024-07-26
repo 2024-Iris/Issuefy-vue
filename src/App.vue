@@ -102,7 +102,6 @@ export default {
     const route = useRoute();
     const isLoggedIn = computed(() => authStore.isLoggedIn);
     const userName = computed(() => authStore.userName);
-    const userEmail = computed(() => authStore.userEmail);
     const avatarURL = computed(() => authStore.avatarURL);
 
     const notifications = ref([]);
@@ -292,7 +291,6 @@ export default {
     return {
       isLoggedIn,
       userName,
-      userEmail,
       avatarURL,
       notifications,
       visibleNotifications,

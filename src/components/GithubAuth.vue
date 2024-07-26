@@ -14,9 +14,9 @@ async function fetchJWT(code) {
     const response = await axios.get(`${process.env.VUE_APP_API_URL}/login`, {
       params: {code}
     });
-    const {jwt, userName, userEmail, avatarURL} = response.data;
+    const {jwt, userName, avatarURL} = response.data;
     const {accessToken, refreshToken} = jwt;
-    return {accessToken, refreshToken, userName, userEmail, avatarURL};
+    return {accessToken, refreshToken, userName, avatarURL};
   } catch (error) {
     console.error('Error fetching JWT:', error);
     return null;
@@ -30,7 +30,7 @@ onMounted(async () => {
   } else if (authorizationCode) {
     const tokens = await fetchJWT(authorizationCode);
     if (tokens && tokens.accessToken && tokens.userName) {
-      authStore.setCredentials(tokens.accessToken, tokens.refreshToken, tokens.userName, tokens.userEmail, tokens.avatarURL);
+      authStore.setCredentials(tokens.accessToken, tokens.refreshToken, tokens.userName,  tokens.avatarURL);
       await nextTick();
       await router.push('/');
     } else {

@@ -5,72 +5,50 @@ export const useAuthStore = defineStore('auth', {
         accessToken: null,
         refreshToken: null,
         userName: null,
-        userEmail: null,
         avatarURL: null,
-        alertStatus: null
     }),
     getters: {
         isLoggedIn: (state) => !!state.accessToken,
     },
     actions: {
-        setCredentials(accessToken, refreshToken, userName, userEmail, avatarURL, alertStatus) {
+        setCredentials(accessToken, refreshToken, userName, avatarURL) {
             this.$patch({
                 accessToken,
                 refreshToken,
                 userName,
-                userEmail,
                 avatarURL,
-                alertStatus
             });
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userName', userName);
-            localStorage.setItem('userEmail', userEmail);
             localStorage.setItem('avatarURL', avatarURL);
-            localStorage.setItem('alertStatus', alertStatus);
         },
         clearCredentials() {
             this.$patch({
                 accessToken: null,
                 refreshToken: null,
                 userName: null,
-                userEmail: null,
                 avatarURL: null,
-                alertStatus: null
             });
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('userName');
-            localStorage.removeItem('userEmail');
             localStorage.removeItem('avatarURL');
-            localStorage.removeItem('alertStatus');
         },
         initCredentials() {
             const accessToken = localStorage.getItem('accessToken');
             const refreshToken = localStorage.getItem('refreshToken');
             const userName = localStorage.getItem('userName');
             const avatarURL = localStorage.getItem('avatarURL');
-            const userEmail = localStorage.getItem('userEmail');
-            const alertStatus = localStorage.getItem('alertStatus');
 
-            if (accessToken && refreshToken && userName && userEmail && avatarURL && alertStatus) {
+            if (accessToken && refreshToken && userName && avatarURL) {
                 this.$patch({
                     accessToken,
                     refreshToken,
                     userName,
-                    userEmail,
                     avatarURL,
-                    alertStatus
                 });
             }
-        },
-        updateUserEmail(email) {
-            this.userEmail = email;
-            localStorage.setItem('userEmail', email);
-        },
-        updateAlertStatus(status) {
-            this.alertStatus = status;
-            localStorage.setItem('alertStatus', status);
         },
     }
 });

@@ -40,7 +40,6 @@
       </button>
     </div>
 
-    <!-- 회원 탈퇴 확인 모달 -->
     <div v-if="showDeleteConfirmation"
          class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
       <div class="bg-white p-5 rounded-lg shadow-xl">
@@ -84,9 +83,9 @@ export default defineComponent({
     const showNotification = ref(false);
     const notificationType = ref('success');
     const notificationMessage = ref('');
-    const userEmail = ref(authStore.userEmail);
-    const editedEmail = ref(userEmail.value);
-    const userAlertStatus = ref(authStore.alertStatus);
+    const userEmail = ref('');
+    const editedEmail = ref('');
+    const userAlertStatus = ref(false);
 
     const isEmailChanged = computed(() => {
       return editedEmail.value !== userEmail.value;
@@ -103,7 +102,7 @@ export default defineComponent({
 
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_URL}/user`, {
+        const response = await axios.get(`${process.env.VUE_APP_API_URL}/user/info`, {
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
           }
@@ -157,7 +156,7 @@ export default defineComponent({
 
     const deleteAccount = async () => {
       try {
-        await axios.delete(`${process.env.VUE_APP_API_URL}/users`, {
+        await axios.delete(`${process.env.VUE_APP_API_URL}/user/withdraw`, {
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
           }
