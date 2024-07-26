@@ -36,15 +36,15 @@
           class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-sm"
           @click="showDeleteConfirmation = true"
       >
-        회원 탈퇴
+        계정 삭제
       </button>
     </div>
 
     <div v-if="showDeleteConfirmation"
          class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
       <div class="bg-white p-5 rounded-lg shadow-xl">
-        <h3 class="text-lg font-bold mb-4">정말로 탈퇴하시겠습니까?</h3>
-        <p class="mb-4">이 작업은 되돌릴 수 없습니다.</p>
+        <h3 class="text-lg font-bold mb-4">정말로 삭제하시겠습니까?</h3>
+        <p class="mb-4">모든 사용자 정보와 인증 정보가 삭제됩니다.</p>
         <div class="flex justify-end space-x-2">
           <button
               class="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
@@ -62,6 +62,22 @@
       </div>
     </div>
 
+    <!-- 계정 삭제 성공 모달 -->
+    <div v-if="showDeleteSuccessModal"
+         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+      <div class="bg-white p-5 rounded-lg shadow-xl">
+        <h3 class="text-lg font-bold mb-4">계정이 성공적으로 삭제되었습니다.</h3>
+        <div class="flex justify-end">
+          <button
+              class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              @click="goToMainPage"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+
     <Notification :message="notificationMessage" :show="showNotification" :type="notificationType"/>
   </div>
 </template>
@@ -71,6 +87,7 @@ import {computed, defineComponent, onMounted, ref} from 'vue';
 import {useAuthStore} from '@/store/pinia';
 import axios from 'axios';
 import Notification from '@/components/RepositoryNotificationPage.vue';
+import {useRouter} from "vue-router";
 
 export default defineComponent({
   name: 'SettingsPage',
@@ -80,12 +97,14 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore();
     const showDeleteConfirmation = ref(false);
+    const showDeleteSuccessModal = ref(false);
     const showNotification = ref(false);
     const notificationType = ref('success');
     const notificationMessage = ref('');
     const userEmail = ref('');
     const editedEmail = ref('');
     const userAlertStatus = ref(false);
+    const router = useRouter();
 
     const isEmailChanged = computed(() => {
       return editedEmail.value !== userEmail.value;
@@ -161,19 +180,26 @@ export default defineComponent({
             Authorization: `Bearer ${authStore.accessToken}`
           }
         });
-        authStore.logout();
-        showNotificationMessage('success', '계정이 성공적으로 삭제되었습니다.');
+        await authStore.clearCredentials();
+        showDeleteConfirmation.value = false;
+        showDeleteSuccessModal.value = true;
       } catch (error) {
         console.error('Error deleting account:', error);
         showNotificationMessage('error', '계정 삭제 중 오류가 발생했습니다.');
+        showDeleteConfirmation.value = false;
       }
-      showDeleteConfirmation.value = false;
+    };
+
+    const goToMainPage = () => {
+      showDeleteSuccessModal.value = false;
+      router.push('/');
     };
 
     onMounted(fetchUserInfo);
 
     return {
       showDeleteConfirmation,
+      showDeleteSuccessModal,
       showNotification,
       notificationType,
       notificationMessage,
@@ -184,7 +210,8 @@ export default defineComponent({
       isEmailChanged,
       updateEmail,
       userAlertStatus,
-      updateAlertStatus
+      updateAlertStatus,
+      goToMainPage
     };
   }
 });
