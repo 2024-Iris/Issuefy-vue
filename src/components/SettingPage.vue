@@ -9,21 +9,21 @@
       <div class="flex items-center justify-between">
         <span class="text-base">이메일 알림 받기</span>
         <label class="switch">
-          <input type="checkbox" v-model="emailNotifications">
+          <input type="checkbox" v-model="userAlertStatus" @change="updateAlertStatus">
           <span class="slider round"></span>
         </label>
       </div>
       <div class="mt-4 flex items-center">
-        <input 
-          type="email" 
-          v-model="editedEmail" 
-          class="flex-grow p-2 border rounded"
-          :placeholder="userEmail ? '' : '등록된 이메일이 없습니다.'"
+        <input
+            type="email"
+            v-model="editedEmail"
+            class="flex-grow p-2 border rounded"
+            :placeholder="userEmail ? '' : '등록된 이메일이 없습니다.'"
         >
-        <button 
-          @click="updateEmail" 
-          class="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded text-sm"
-          v-if="isEmailChanged"
+        <button
+            @click="updateEmail"
+            class="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded text-sm"
+            v-if="isEmailChanged"
         >
           수정
         </button>
@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed } from 'vue';
-import { useAuthStore } from '@/store/pinia';
+import {computed, defineComponent, onMounted, ref} from 'vue';
+import {useAuthStore} from '@/store/pinia';
 import axios from 'axios';
 import Notification from '@/components/RepositoryNotificationPage.vue';
 
@@ -80,13 +80,13 @@ export default defineComponent({
   },
   setup() {
     const authStore = useAuthStore();
-    const emailNotifications = ref(true);
     const showDeleteConfirmation = ref(false);
     const showNotification = ref(false);
     const notificationType = ref('success');
     const notificationMessage = ref('');
     const userEmail = ref(authStore.userEmail);
     const editedEmail = ref(userEmail.value);
+    const userAlertStatus = ref(authStore.alertStatus);
 
     const isEmailChanged = computed(() => {
       return editedEmail.value !== userEmail.value;
@@ -101,22 +101,57 @@ export default defineComponent({
       }, 3000);
     };
 
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_URL}/user`, {
+          headers: {
+            Authorization: `Bearer ${authStore.accessToken}`
+          }
+        });
+        const userData = response.data;
+        userEmail.value = userData.email;
+        editedEmail.value = userData.email;
+        userAlertStatus.value = userData.alertStatus;
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+        showNotificationMessage('error', '사용자 정보를 가져오는 중 오류가 발생했습니다.');
+      }
+    };
+
     const updateEmail = async () => {
       try {
-        await axios.put(`${process.env.VUE_APP_API_URL}/user/update`, 
-          { email: editedEmail.value },
-          {
-            headers: {
-              Authorization: `Bearer ${authStore.accessToken}`
+        await axios.patch(`${process.env.VUE_APP_API_URL}/user/email`,
+            {email: editedEmail.value},
+            {
+              headers: {
+                Authorization: `Bearer ${authStore.accessToken}`
+              }
             }
-          }
         );
-        userEmail.value = editedEmail.value;
-        authStore.updateUserEmail(editedEmail.value);
+        await fetchUserInfo();
         showNotificationMessage('success', '이메일이 성공적으로 수정되었습니다.');
       } catch (error) {
         console.error('Error updating email:', error);
         showNotificationMessage('error', '이메일 수정 중 오류가 발생했습니다.');
+      }
+    };
+
+    const updateAlertStatus = async () => {
+      try {
+        await axios.patch(`${process.env.VUE_APP_API_URL}/user/alert`,
+            {alertStatus: userAlertStatus.value},
+            {
+              headers: {
+                Authorization: `Bearer ${authStore.accessToken}`
+              }
+            }
+        );
+        await fetchUserInfo();
+        showNotificationMessage('success', '알림 설정이 업데이트되었습니다.');
+      } catch (error) {
+        console.error('Error updating alert status:', error);
+        showNotificationMessage('error', '알림 설정 업데이트 중 오류가 발생했습니다.');
+        userAlertStatus.value = !userAlertStatus.value;
       }
     };
 
@@ -136,8 +171,9 @@ export default defineComponent({
       showDeleteConfirmation.value = false;
     };
 
+    onMounted(fetchUserInfo);
+
     return {
-      emailNotifications,
       showDeleteConfirmation,
       showNotification,
       notificationType,
@@ -147,7 +183,9 @@ export default defineComponent({
       userEmail,
       editedEmail,
       isEmailChanged,
-      updateEmail
+      updateEmail,
+      userAlertStatus,
+      updateAlertStatus
     };
   }
 });

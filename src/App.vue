@@ -105,9 +105,6 @@ export default {
     const userEmail = computed(() => authStore.userEmail);
     const avatarURL = computed(() => authStore.avatarURL);
 
-    console.log(userEmail)
-    console.log(userName)
-
     const notifications = ref([]);
     const visibleNotifications = ref([]);
     const unreadCount = ref(0);
