@@ -2,34 +2,35 @@
   <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
       <div v-if="!hideListName">
-        <h1 class="text-base text-left font-bold">리포지토리 목록</h1>
+        <h1 class="text-lg text-left font-bold">리포지토리 목록</h1>
       </div>
       <div v-if="!hideAddBox" class="flex items-center space-x-4 w-2/3 justify-end">
         <div v-if="adding" v-click-outside="cancelAdding" class="flex items-center space-x-2">
           <input
-              v-model="newRepositoryUrl"
-              @keyup.enter="addRepository"
-              type="text"
               id="newRepositoryUrl"
+              v-model="newRepositoryUrl"
+              class="input-full-width font-thin px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
               name="newRepositoryUrl"
               placeholder="Enter Repository URL"
-              class="input-full-width font-thin px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+              type="text"
+              @keyup.enter="addRepository"
           />
-          <button @click="addRepository"
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm"
+                  @click="addRepository">
             추가
           </button>
-          <button @click="cancelAdding"
-                  class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm">
+          <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm"
+                  @click="cancelAdding">
             취소
           </button>
         </div>
-        <button v-if="!adding" @click="startAdding"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+        <button v-if="!adding" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm"
+                @click="startAdding">
           리포지토리 추가
         </button>
-        <button v-if="hasSelectedRepositories" @click="deleteSelectedRepositories"
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-sm">
+        <button v-if="hasSelectedRepositories"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-sm"
+                @click="deleteSelectedRepositories">
           리포지토리 삭제
         </button>
       </div>
@@ -37,7 +38,7 @@
 
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
       <div class="w-1/12 text-left">
-        <input type="checkbox" v-model="allSelected" @change="toggleSelectAll">
+        <input v-model="allSelected" type="checkbox" @change="toggleSelectAll">
       </div>
 
       <div class="w-1/3 text-left text-base">조직 이름</div>
@@ -49,10 +50,10 @@
       <div v-for="repository in org.org.repositories" :key="repository.id"
            class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
         <div class="w-1/12 text-left">
-          <input type="checkbox" v-model="repository.selected">
+          <input v-model="repository.selected" type="checkbox">
         </div>
         <div class="w-1/3 text-left flex items-center">
-          <button @click="toggleStar(repository.id)" class="text-yellow-500 mr-2">
+          <button class="text-yellow-500 mr-2" @click="toggleStar(repository.id)">
             {{ repository.star ? '★' : '☆' }}
           </button>
           <span class="org text-base font-bold mr-3">{{ org.org.name }}</span>
@@ -69,7 +70,7 @@
       </div>
     </div>
 
-    <Notification :show="showNotification" :type="notificationType" :message="notificationMessage"/>
+    <Notification :message="notificationMessage" :show="showNotification" :type="notificationType"/>
   </div>
 </template>
 

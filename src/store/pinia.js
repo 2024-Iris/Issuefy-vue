@@ -5,7 +5,7 @@ export const useAuthStore = defineStore('auth', {
         accessToken: null,
         refreshToken: null,
         userName: null,
-        avatarURL: null
+        avatarURL: null,
     }),
     getters: {
         isLoggedIn: (state) => !!state.accessToken,
@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', {
                 accessToken,
                 refreshToken,
                 userName,
-                avatarURL
+                avatarURL,
             });
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
                 accessToken: null,
                 refreshToken: null,
                 userName: null,
-                avatarURL: null
+                avatarURL: null,
             });
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
@@ -46,10 +46,10 @@ export const useAuthStore = defineStore('auth', {
                     accessToken,
                     refreshToken,
                     userName,
-                    avatarURL
+                    avatarURL,
                 });
             }
-        }
+        },
     }
 });
 

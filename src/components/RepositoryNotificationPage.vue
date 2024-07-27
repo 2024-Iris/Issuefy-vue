@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="notification" :class="type">
+  <div v-if="show" :class="type" class="notification">
     <div class="notification-content">
       <font-awesome-icon v-if="type === 'success'" icon="check" style="color: #63E6BE;"/>
       <font-awesome-icon v-else icon="circle-exclamation"/>

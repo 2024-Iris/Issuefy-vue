@@ -11,7 +11,7 @@
     <div v-for="issue in filteredIssues" :key="issue.id"
          class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
       <div class="w-1/3 text-left flex items-center">
-        <button @click="toggleStar(issue.id)" class="text-yellow-500 mr-2">
+        <button class="text-yellow-500 mr-2" @click="toggleStar(issue.id)">
           {{ issue.star ? '★' : '☆' }}
         </button>
         <router-link :to="`/${org}/${repository}/issues/` + issue.id"
@@ -28,8 +28,8 @@
         </div>
       </div>
       <div class="w-1/3 text-center">
-        <span class="status text-sm font-semibold"
-              :class="{'text-green-500': issue.status === 'open', 'text-red-500': issue.status === 'closed'}">{{
+        <span :class="{'text-green-500': issue.status === 'open', 'text-red-500': issue.status === 'closed'}"
+              class="status text-sm font-semibold">{{
             issue.status
           }}</span>
         <p class="text-sm text-gray-600">{{ issue.updatedAt }}</p>

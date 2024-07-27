@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, nextTick } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from '@/store/pinia';
+import {nextTick, onMounted} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {useAuthStore} from '@/store/pinia';
 import axios from 'axios';
 
 const router = useRouter();
@@ -12,11 +12,11 @@ const authStore = useAuthStore();
 async function fetchJWT(code) {
   try {
     const response = await axios.get(`${process.env.VUE_APP_API_URL}/login`, {
-      params: { code }
+      params: {code}
     });
-    const { jwt, userName, avatarURL } = response.data;
-    const { accessToken, refreshToken } = jwt;
-    return { accessToken, refreshToken, userName, avatarURL };
+    const {jwt, userName, avatarURL} = response.data;
+    const {accessToken, refreshToken} = jwt;
+    return {accessToken, refreshToken, userName, avatarURL};
   } catch (error) {
     console.error('Error fetching JWT:', error);
     return null;
