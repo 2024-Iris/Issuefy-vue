@@ -9,21 +9,21 @@
       <div class="flex items-center justify-between">
         <span class="text-base">이메일 알림 받기</span>
         <label class="switch">
-          <input type="checkbox" v-model="userAlertStatus" @change="updateAlertStatus">
+          <input v-model="userAlertStatus" type="checkbox" @change="updateAlertStatus">
           <span class="slider round"></span>
         </label>
       </div>
       <div class="mt-4 flex items-center">
         <input
-            type="email"
             v-model="editedEmail"
-            class="flex-grow p-2 border rounded"
             :placeholder="userEmail ? '' : '등록된 이메일이 없습니다.'"
+            class="flex-grow p-2 border rounded"
+            type="email"
         >
         <button
-            @click="updateEmail"
-            class="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded text-sm"
             v-if="isEmailChanged"
+            class="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded text-sm"
+            @click="updateEmail"
         >
           수정
         </button>
@@ -56,7 +56,7 @@
               class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
               @click="deleteAccount"
           >
-            탈퇴 확인
+            삭제
           </button>
         </div>
       </div>

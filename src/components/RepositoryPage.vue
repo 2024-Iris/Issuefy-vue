@@ -28,7 +28,8 @@
                 @click="startAdding">
           리포지토리 추가
         </button>
-        <button v-if="hasSelectedRepositories" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-sm"
+        <button v-if="hasSelectedRepositories"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-sm"
                 @click="deleteSelectedRepositories">
           리포지토리 삭제
         </button>

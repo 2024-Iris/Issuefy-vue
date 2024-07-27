@@ -30,7 +30,7 @@ onMounted(async () => {
   } else if (authorizationCode) {
     const tokens = await fetchJWT(authorizationCode);
     if (tokens && tokens.accessToken && tokens.userName) {
-      authStore.setCredentials(tokens.accessToken, tokens.refreshToken, tokens.userName,  tokens.avatarURL);
+      authStore.setCredentials(tokens.accessToken, tokens.refreshToken, tokens.userName, tokens.avatarURL);
       await nextTick();
       await router.push('/');
     } else {
