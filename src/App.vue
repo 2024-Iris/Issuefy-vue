@@ -121,10 +121,14 @@ export default {
     const formatTime = (isoString) => {
       if (!isoString) return '';
 
-      const [datePart, timePart] = isoString.split('T');
-      const timeWithoutSeconds = timePart.split(':').slice(0, 2).join(':');
+      const date = new Date(isoString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
 
-      return `${datePart} ${timeWithoutSeconds}`;
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
     };
 
     const loadMoreNotifications = () => {
@@ -146,9 +150,9 @@ export default {
         notifications.value = response.data
             .map(notification => ({
               ...notification,
-              formattedTime: formatTime(notification.localDateTime)
+              formattedTime: formatTime(notification.notificationCreatedAt)
             }))
-            .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+            .sort((a, b) => new Date(b.notificationCreatedAt) - new Date(a.notificationCreatedAt));
         updateVisibleNotifications();
         unreadCount.value = notifications.value.filter(n => !n.read).length;
       } catch (error) {
@@ -239,10 +243,10 @@ export default {
               if (data.userNotificationId) {
                 const newNotification = {
                   ...data,
-                  formattedTime: formatTime(data.localDateTime)
+                  formattedTime: formatTime(data.notificationCreatedAt)
                 };
                 notifications.value = [newNotification, ...notifications.value]
-                    .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+                    .sort((a, b) => new Date(b.notificationCreatedAt) - new Date(a.notificationCreatedAt));
                 updateVisibleNotifications();
                 unreadCount.value++;
               }
