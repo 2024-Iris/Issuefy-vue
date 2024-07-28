@@ -148,11 +148,11 @@ export default {
           }
         });
         notifications.value = response.data
-          .map(notification => ({
-            ...notification,
-            formattedTime: formatTime(notification.notificationCreatedAt)
-          }))
-          .sort((a, b) => new Date(b.notificationCreatedAt) - new Date(a.notificationCreatedAt));
+            .map(notification => ({
+              ...notification,
+              formattedTime: formatTime(notification.notificationCreatedAt)
+            }))
+            .sort((a, b) => new Date(b.notificationCreatedAt) - new Date(a.notificationCreatedAt));
         updateVisibleNotifications();
         unreadCount.value = notifications.value.filter(n => !n.read).length;
       } catch (error) {
@@ -179,13 +179,13 @@ export default {
     const markNotificationsAsRead = async (userNotificationIds) => {
       try {
         const response = await axios.patch(
-          `${process.env.VUE_APP_API_URL}/notifications`,
-          {userNotificationIds},
-          {
-            headers: {
-              'Authorization': `Bearer ${authStore.accessToken}`
+            `${process.env.VUE_APP_API_URL}/notifications`,
+            {userNotificationIds},
+            {
+              headers: {
+                'Authorization': `Bearer ${authStore.accessToken}`
+              }
             }
-          }
         );
 
         if (response.status === 200) {
@@ -208,8 +208,8 @@ export default {
 
     const markAllAsRead = async () => {
       const unreadNotificationIds = notifications.value
-        .filter(n => !n.read)
-        .map(n => n.userNotificationId);
+          .filter(n => !n.read)
+          .map(n => n.userNotificationId);
       if (unreadNotificationIds.length > 0) {
         await markNotificationsAsRead(unreadNotificationIds);
       }
@@ -246,7 +246,7 @@ export default {
                   formattedTime: formatTime(data.notificationCreatedAt)
                 };
                 notifications.value = [newNotification, ...notifications.value]
-                  .sort((a, b) => new Date(b.notificationCreatedAt) - new Date(a.notificationCreatedAt));
+                    .sort((a, b) => new Date(b.notificationCreatedAt) - new Date(a.notificationCreatedAt));
                 updateVisibleNotifications();
                 unreadCount.value++;
               }
