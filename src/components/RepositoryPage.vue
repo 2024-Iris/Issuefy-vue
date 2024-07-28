@@ -53,8 +53,8 @@
           <input v-model="repository.selected" type="checkbox">
         </div>
         <div class="w-1/3 text-left flex items-center">
-          <button class="text-yellow-500 mr-2" @click="toggleStar(repository.id)">
-            {{ repository.star ? '★' : '☆' }}
+          <button class="text-yellow-500 mr-2" @click="toggleStar(org.org.id, repository.id)">
+            {{ repository.starred ? '★' : '☆' }}
           </button>
           <span class="org text-base font-bold mr-3">{{ org.org.name }}</span>
         </div>
@@ -76,7 +76,7 @@
 
 <script>
 import {computed, defineComponent, onMounted, ref} from 'vue';
-import {useAuthStore, useRepositoryStore, useStarStore} from '@/store/pinia';
+import {useAuthStore, useRepositoryStore} from '@/store/pinia';
 import {useRoute} from 'vue-router';
 import clickOutside from '@/directives/clickOutside';
 import axios from 'axios';
@@ -97,7 +97,6 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const store = useStarStore();
     const route = useRoute();
     const hideAddBox = computed(() => route.meta.hideAddBox);
     const hideListName = computed(() => route.meta.hideListName);
@@ -115,19 +114,33 @@ export default defineComponent({
             ...org,
             org: {
               ...org.org,
-              repositories: org.org.repositories.filter(repository => repository.star)
+              repositories: org.org.repositories.filter(repository => repository.starred)
             }
           }))
           : repositories.value;
     });
 
-    const toggleStar = (id) => {
-      store.toggleRepositoryStar(id);
-      for (const org of repositories.value) {
-        const repo = org.org.repositories.find(repo => repo.id === id);
-        if (repo) {
-          repo.star = !repo.star;
+    const toggleStar = async (orgId, repoId) => {
+      try {
+        const authStore = useAuthStore();
+        const accessToken = authStore.accessToken;
+
+        await axios.put(`${process.env.VUE_APP_API_URL}/subscription/star/${repoId}`, {}, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+
+        const org = repositories.value.find(o => o.org.id === orgId);
+        if (org) {
+          const repo = org.org.repositories.find(r => r.id === repoId);
+          if (repo) {
+            repo.starred = !repo.starred;
+          }
         }
+      } catch (error) {
+        console.error('Error toggling star:', error);
+        showNotificationMessage('error', '즐겨찾기 변경 중 오류가 발생했습니다.');
       }
     };
 
@@ -243,19 +256,20 @@ async function getRepositories() {
       }
     });
 
-    const repositories = response.data.map(org => ({
-      ...org,
+    const repositories = response.data.map(item => ({
+      ...item,
       org: {
-        ...org.org,
-        repositories: org.org.repositories.map(repo => ({
+        ...item.org,
+        repositories: item.org.repositories.map(repo => ({
           ...repo,
-          selected: false
+          selected: false,
+          star: repo.starred
         }))
       }
     }));
 
     repositoriesStore.setRepositories(repositories);
-    console.log(repositories)
+    console.log(repositories);
     return repositories;
   } catch (error) {
     console.error('Error fetching repositories:', error);
