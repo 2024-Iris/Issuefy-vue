@@ -121,10 +121,14 @@ export default {
     const formatTime = (isoString) => {
       if (!isoString) return '';
 
-      const [datePart, timePart] = isoString.split('T');
-      const timeWithoutSeconds = timePart.split(':').slice(0, 2).join(':');
+      const date = new Date(isoString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
 
-      return `${datePart} ${timeWithoutSeconds}`;
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
     };
 
     const loadMoreNotifications = () => {
@@ -144,11 +148,11 @@ export default {
           }
         });
         notifications.value = response.data
-            .map(notification => ({
-              ...notification,
-              formattedTime: formatTime(notification.localDateTime)
-            }))
-            .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+          .map(notification => ({
+            ...notification,
+            formattedTime: formatTime(notification.notificationCreatedAt)
+          }))
+          .sort((a, b) => new Date(b.notificationCreatedAt) - new Date(a.notificationCreatedAt));
         updateVisibleNotifications();
         unreadCount.value = notifications.value.filter(n => !n.read).length;
       } catch (error) {
@@ -175,13 +179,13 @@ export default {
     const markNotificationsAsRead = async (userNotificationIds) => {
       try {
         const response = await axios.patch(
-            `${process.env.VUE_APP_API_URL}/notifications`,
-            {userNotificationIds},
-            {
-              headers: {
-                'Authorization': `Bearer ${authStore.accessToken}`
-              }
+          `${process.env.VUE_APP_API_URL}/notifications`,
+          {userNotificationIds},
+          {
+            headers: {
+              'Authorization': `Bearer ${authStore.accessToken}`
             }
+          }
         );
 
         if (response.status === 200) {
@@ -204,8 +208,8 @@ export default {
 
     const markAllAsRead = async () => {
       const unreadNotificationIds = notifications.value
-          .filter(n => !n.read)
-          .map(n => n.userNotificationId);
+        .filter(n => !n.read)
+        .map(n => n.userNotificationId);
       if (unreadNotificationIds.length > 0) {
         await markNotificationsAsRead(unreadNotificationIds);
       }
@@ -239,10 +243,10 @@ export default {
               if (data.userNotificationId) {
                 const newNotification = {
                   ...data,
-                  formattedTime: formatTime(data.localDateTime)
+                  formattedTime: formatTime(data.notificationCreatedAt)
                 };
                 notifications.value = [newNotification, ...notifications.value]
-                    .sort((a, b) => new Date(b.localDateTime) - new Date(a.localDateTime));
+                  .sort((a, b) => new Date(b.notificationCreatedAt) - new Date(a.notificationCreatedAt));
                 updateVisibleNotifications();
                 unreadCount.value++;
               }
