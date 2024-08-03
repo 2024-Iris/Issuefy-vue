@@ -46,26 +46,26 @@
       <div class="w-1/3 text-center text-base">최근 업데이트</div>
     </div>
 
-    <div v-for="org in repositories" :key="org.org.id">
-      <div v-for="repository in org.org.repositories" :key="repository.id"
+    <div v-for="orgData in filteredRepositories" :key="orgData.org.id">
+      <div v-for="repository in orgData.org.repositories" :key="repository.id"
            class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
         <div class="w-1/12 text-left">
           <input v-model="repository.selected" type="checkbox">
         </div>
         <div class="w-1/3 text-left flex items-center">
-          <button class="text-yellow-500 mr-2" @click="toggleStar(org.org.id, repository.id)">
+          <button class="text-yellow-500 mr-2" @click="toggleStar(orgData.org.id, repository.id)">
             {{ repository.starred ? '★' : '☆' }}
           </button>
-          <span class="org text-base font-bold mr-3">{{ org.org.name }}</span>
+          <span class="org text-base font-bold mr-3">{{ orgData.org.name }}</span>
         </div>
         <div class="w-1/3 text-left">
-          <router-link :to="`/${org.org.name}/${repository.name}/issues`"
+          <router-link :to="`/${orgData.org.name}/${repository.name}/issues`"
                        class="text-base font-bold text-blue-500 hover:text-blue-800">
             {{ repository.name }}
           </router-link>
         </div>
         <div class="w-1/3 text-center">
-          <p class="text-base text-gray-700">{{ repository.updatedAt }}</p>
+          <p class="text-base text-gray-700">{{ formatDate(repository.latestUpdateAt) }}</p>
         </div>
       </div>
     </div>
@@ -75,9 +75,9 @@
 </template>
 
 <script>
-import {computed, defineComponent, onMounted, ref} from 'vue';
-import {useAuthStore, useRepositoryStore} from '@/store/pinia';
-import {useRoute} from 'vue-router';
+import { computed, defineComponent, onMounted, ref } from 'vue';
+import { useAuthStore, useRepositoryStore } from '@/store/pinia';
+import { useRoute } from 'vue-router';
 import clickOutside from '@/directives/clickOutside';
 import axios from 'axios';
 import Notification from '@/components/RepositoryNotificationPage.vue';
@@ -217,6 +217,17 @@ export default defineComponent({
       }
     };
 
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
     onMounted(async () => {
       repositories.value = await getRepositories();
     });
@@ -239,7 +250,8 @@ export default defineComponent({
       allSelected,
       toggleSelectAll,
       hasSelectedRepositories,
-      deleteSelectedRepositories
+      deleteSelectedRepositories,
+      formatDate
     };
   }
 });
@@ -262,8 +274,7 @@ async function getRepositories() {
         ...item.org,
         repositories: item.org.repositories.map(repo => ({
           ...repo,
-          selected: false,
-          star: repo.starred
+          selected: false
         }))
       }
     }));
