@@ -1,7 +1,7 @@
 <template>
   <header v-if="!$route.meta.hideHeader" class="bg-white">
-    <nav aria-label="Global" class="flex w-full items-center justify-between py-4 lg:px-8 bg-gray-50">
-      <div class="flex items-center lg:flex-1">
+    <nav aria-label="Global" class="flex w-full items-center justify-between py-4 px-4 bg-gray-50 flex-wrap">
+      <div class="flex items-center flex-grow">
         <router-link class="flex items-center" to="/">
           <img alt="issuefy logo" class="h-16 w-auto" src="./assets/issuefy-removebg_logo.png"/>
           <div v-if="$route.meta.showBreadcrumbs" class="ml-4 flex items-center space-x-2">
@@ -20,10 +20,10 @@
           </div>
         </router-link>
       </div>
-      <div v-if="isLoggedIn" class="hidden lg:flex lg:items-center lg:gap-x-6">
-        <div class="relative">
+      <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap">
+        <div class="relative mr-2">
           <button class="relative" @click="toggleNotifications">
-            <font-awesome-icon icon="bell" style="color: #B197FC;"/>
+            <font-awesome-icon icon="bell" style="color: #B197FC; font-size: 1.25rem;" />
             <span v-if="unreadCount > 0"
                   class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
               {{ unreadCount }}
@@ -68,11 +68,10 @@
             </div>
           </div>
         </div>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/">Home</router-link>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/repositories">Repositories</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/">Home</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/repositories">Repositories</router-link>
       </div>
-      <div v-if="isLoggedIn" class="mx-5"></div>
-      <div v-if="isLoggedIn" class="flex items-center gap-x-4">
+      <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap ml-4">
         <div class="flex items-center space-x-2">
           <img :src="avatarURL" alt="User Avatar" class="w-10 h-10 rounded-full">
           <router-link class="text-sm font-semibold leading-6 text-blue-600 hover:underline" to="/settings">
@@ -81,7 +80,7 @@
         </div>
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Logout</router-link>
       </div>
-      <div v-else class="flex justify-end flex-1">
+      <div v-else class="flex justify-end">
         <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/login">Login</router-link>
       </div>
     </nav>
