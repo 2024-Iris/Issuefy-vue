@@ -55,7 +55,10 @@
     </div>
 
     <div v-for="repository in paginatedRepositories" :key="repository.id"
-         class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
+         :class="[
+           'repository border-b border-gray-200 py-4 px-6 flex justify-between items-center',
+           formatDate(repository.latestUpdateAt).isRecent
+         ]">
       <div class="w-1/12 text-left">
         <input v-model="repository.selected" type="checkbox">
       </div>
@@ -71,8 +74,18 @@
           {{ repository.name }}
         </router-link>
       </div>
-      <div class="w-1/3 text-center">
-        <p class="text-base text-gray-700">{{ formatDate(repository.latestUpdateAt) }}</p>
+      <div class="w-1/3 text-center flex items-center justify-center">
+        <font-awesome-icon
+            v-if="formatDate(repository.latestUpdateAt).isRecent"
+            icon="bell"
+            class="mr-2 text-sky-500"
+        />
+        <p :class="[
+           'text-base',
+           formatDate(repository.latestUpdateAt).isRecent ? 'font-bold text-sky-500' : 'text-gray-700'
+         ]">
+          {{ formatDate(repository.latestUpdateAt).formattedDate }}
+        </p>
       </div>
     </div>
 
@@ -149,7 +162,6 @@ export default defineComponent({
             orgId: org.org.id
           }))
       ).sort((a, b) => {
-        // 즐겨찾기된 항목을 항상 상위에 표시
         if (a.starred !== b.starred) {
           return b.starred ? 1 : -1;
         }
@@ -308,13 +320,25 @@ export default defineComponent({
 
     const formatDate = (dateString) => {
       const date = new Date(dateString);
-      return date.toLocaleString('ko-KR', {
+      const now = new Date();
+
+      const kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000));
+      const kstNow = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+
+      const diff = kstNow - kstDate;
+      const isRecent = diff < 24 * 60 * 60 * 1000; // 24시간 이내
+
+      const formattedDate = kstDate.toLocaleString('ko-KR', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Seoul'
       });
+
+      return {formattedDate, isRecent};
     };
 
     onMounted(async () => {
