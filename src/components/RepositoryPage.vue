@@ -40,34 +40,49 @@
       <div class="w-1/12 text-left">
         <input v-model="allSelected" type="checkbox" @change="toggleSelectAll">
       </div>
-
-      <div class="w-1/3 text-left text-base">조직 이름</div>
-      <div class="w-1/3 text-left text-base">리포지토리 이름</div>
-      <div class="w-1/3 text-center text-base">최근 업데이트</div>
+      <div class="w-1/3 text-left text-base cursor-pointer" @click="changeSort('orgName')">
+        조직 이름
+        <span v-if="sortBy === 'orgName'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+      </div>
+      <div class="w-1/3 text-left text-base cursor-pointer" @click="changeSort('name')">
+        리포지토리 이름
+        <span v-if="sortBy === 'name'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+      </div>
+      <div class="w-1/3 text-center text-base cursor-pointer" @click="changeSort('latestUpdateAt')">
+        최근 업데이트
+        <span v-if="sortBy === 'latestUpdateAt'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+      </div>
     </div>
 
-    <div v-for="orgData in filteredRepositories" :key="orgData.org.id">
-      <div v-for="repository in orgData.org.repositories" :key="repository.id"
-           class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
-        <div class="w-1/12 text-left">
-          <input v-model="repository.selected" type="checkbox">
-        </div>
-        <div class="w-1/3 text-left flex items-center">
-          <button class="text-yellow-500 mr-2" @click="toggleStar(orgData.org.id, repository.id)">
-            {{ repository.starred ? '★' : '☆' }}
-          </button>
-          <span class="org text-base font-bold mr-3">{{ orgData.org.name }}</span>
-        </div>
-        <div class="w-1/3 text-left">
-          <router-link :to="`/${orgData.org.name}/${repository.name}/issues`"
-                       class="text-base font-bold text-blue-500 hover:text-blue-800">
-            {{ repository.name }}
-          </router-link>
-        </div>
-        <div class="w-1/3 text-center">
-          <p class="text-base text-gray-700">{{ formatDate(repository.latestUpdateAt) }}</p>
-        </div>
+    <div v-for="repository in paginatedRepositories" :key="repository.id"
+         class="repository bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
+      <div class="w-1/12 text-left">
+        <input v-model="repository.selected" type="checkbox">
       </div>
+      <div class="w-1/3 text-left flex items-center">
+        <button class="text-yellow-500 mr-2" @click="toggleStar(repository.orgId, repository.id)">
+          {{ repository.starred ? '★' : '☆' }}
+        </button>
+        <span class="org text-base font-bold mr-3">{{ repository.orgName }}</span>
+      </div>
+      <div class="w-1/3 text-left">
+        <router-link :to="`/${repository.orgName}/${repository.name}/issues`"
+                     class="text-base font-bold text-blue-500 hover:text-blue-800">
+          {{ repository.name }}
+        </router-link>
+      </div>
+      <div class="w-1/3 text-center">
+        <p class="text-base text-gray-700">{{ formatDate(repository.latestUpdateAt) }}</p>
+      </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div v-if="!hideListName" class="pagination flex justify-center mt-4">
+      <button v-for="page in totalPages" :key="page"
+              :class="['mx-1 px-3 py-1 rounded', currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200']"
+              @click="changePage(page)">
+        {{ page }}
+      </button>
     </div>
 
     <Notification :message="notificationMessage" :show="showNotification" :type="notificationType"/>
@@ -75,9 +90,9 @@
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, ref } from 'vue';
-import { useAuthStore, useRepositoryStore } from '@/store/pinia';
-import { useRoute } from 'vue-router';
+import {computed, defineComponent, onMounted, ref} from 'vue';
+import {useAuthStore, useRepositoryStore} from '@/store/pinia';
+import {useRoute} from 'vue-router';
 import clickOutside from '@/directives/clickOutside';
 import axios from 'axios';
 import Notification from '@/components/RepositoryNotificationPage.vue';
@@ -108,6 +123,9 @@ export default defineComponent({
     const repositoriesStore = useRepositoryStore();
     const repositories = computed(() => repositoriesStore.repositories);
 
+    const sortBy = ref('latestUpdateAt');
+    const sortOrder = ref('desc');
+
     const filteredRepositories = computed(() => {
       return props.starred
           ? repositories.value.map(org => ({
@@ -120,10 +138,81 @@ export default defineComponent({
           : repositories.value;
     });
 
+    const itemsPerPage = 15;
+    const currentPage = ref(1);
+
+    const sortedRepositories = computed(() => {
+      return filteredRepositories.value.flatMap(org =>
+          org.org.repositories.map(repo => ({
+            ...repo,
+            orgName: org.org.name,
+            orgId: org.org.id
+          }))
+      ).sort((a, b) => {
+        // 즐겨찾기된 항목을 항상 상위에 표시
+        if (a.starred !== b.starred) {
+          return b.starred ? 1 : -1;
+        }
+
+        if (sortBy.value === 'latestUpdateAt') {
+          return sortOrder.value === 'asc'
+              ? new Date(a.latestUpdateAt) - new Date(b.latestUpdateAt)
+              : new Date(b.latestUpdateAt) - new Date(a.latestUpdateAt);
+        } else if (sortBy.value === 'orgName') {
+          return sortOrder.value === 'asc'
+              ? a.orgName.localeCompare(b.orgName)
+              : b.orgName.localeCompare(a.orgName);
+        } else if (sortBy.value === 'name') {
+          return sortOrder.value === 'asc'
+              ? a.name.localeCompare(b.name)
+              : b.name.localeCompare(a.name);
+        }
+      });
+    });
+
+    const paginatedRepositories = computed(() => {
+      const startIndex = (currentPage.value - 1) * itemsPerPage;
+      return sortedRepositories.value.slice(startIndex, startIndex + itemsPerPage);
+    });
+
+    const totalPages = computed(() =>
+        Math.ceil(sortedRepositories.value.length / itemsPerPage)
+    );
+
+    const changePage = (page) => {
+      currentPage.value = page;
+    };
+
+    const changeSort = (newSortBy) => {
+      if (sortBy.value === newSortBy) {
+        sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortBy.value = newSortBy;
+        sortOrder.value = 'asc';
+      }
+    };
+
+    const getSortDescription = () => {
+      const sortDescription = {
+        orgName: '조직 이름',
+        name: '리포지토리 이름',
+        latestUpdateAt: '최근 업데이트'
+      };
+      return `${sortDescription[sortBy.value]} (${sortOrder.value === 'asc' ? '오름차순' : '내림차순'})`;
+    };
+
     const toggleStar = async (orgId, repoId) => {
       try {
         const authStore = useAuthStore();
         const accessToken = authStore.accessToken;
+
+        const starredCount = sortedRepositories.value.filter(repo => repo.starred).length;
+        const repo = sortedRepositories.value.find(r => r.id === repoId);
+
+        if (!repo.starred && starredCount >= 10) {
+          showNotificationMessage('error', '즐겨찾기는 최대 10개만 설정 가능합니다.');
+          return;
+        }
 
         await axios.put(`${process.env.VUE_APP_API_URL}/subscription/star/${repoId}`, {}, {
           headers: {
@@ -235,6 +324,7 @@ export default defineComponent({
     return {
       repositories,
       filteredRepositories,
+      paginatedRepositories,
       toggleStar,
       hideAddBox,
       hideListName,
@@ -251,7 +341,14 @@ export default defineComponent({
       toggleSelectAll,
       hasSelectedRepositories,
       deleteSelectedRepositories,
-      formatDate
+      formatDate,
+      currentPage,
+      totalPages,
+      changePage,
+      sortBy,
+      sortOrder,
+      changeSort,
+      getSortDescription
     };
   }
 });
