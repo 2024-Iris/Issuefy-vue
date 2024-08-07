@@ -4,6 +4,9 @@
       <div v-if="!hideListName">
         <h1 class="text-lg text-left font-bold">리포지토리 목록</h1>
       </div>
+      <div v-else>
+        <h1 class="text-lg text-left font-bold">즐겨찾기 목록</h1>
+      </div>
       <div v-if="!hideAddBox" class="flex items-center space-x-4 w-2/3 justify-end">
         <div v-if="adding" v-click-outside="cancelAdding" class="flex items-center space-x-2">
           <input
@@ -44,47 +47,47 @@
         조직 이름
         <span v-if="sortBy === 'orgName'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
       </div>
-      <div class="w-1/3 text-left text-base cursor-pointer" @click="changeSort('name')">
+      <div class="w-1/3 text-left text-base cursor-pointer" @click="changeSort('repositoryName')">
         리포지토리 이름
-        <span v-if="sortBy === 'name'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+        <span v-if="sortBy === 'repositoryName'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
       </div>
-      <div class="w-1/3 text-center text-base cursor-pointer" @click="changeSort('latestUpdateAt')">
+      <div class="w-1/3 text-center text-base cursor-pointer" @click="changeSort('repositoryLatestUpdateAt')">
         최근 업데이트
-        <span v-if="sortBy === 'latestUpdateAt'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+        <span v-if="sortBy === 'repositoryLatestUpdateAt'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
       </div>
     </div>
 
-    <div v-for="repository in paginatedRepositories" :key="repository.id"
+    <div v-for="repository in repositories" :key="repository.githubRepositoryId"
          :class="[
            'repository border-b border-gray-200 py-4 px-6 flex justify-between items-center',
-           formatDate(repository.latestUpdateAt).isRecent
+           formatDate(repository.repositoryLatestUpdateAt).isRecent
          ]">
       <div class="w-1/12 text-left">
         <input v-model="repository.selected" type="checkbox">
       </div>
       <div class="w-1/3 text-left flex items-center">
-        <button class="text-yellow-500 mr-2" @click="toggleStar(repository.orgId, repository.id)">
-          {{ repository.starred ? '★' : '☆' }}
+        <button class="text-yellow-500 mr-2" @click="toggleStar(repository.orgId, repository.githubRepositoryId)">
+          {{ repository.repositoryStarred ? '★' : '☆' }}
         </button>
         <span class="org text-base font-bold mr-3">{{ repository.orgName }}</span>
       </div>
       <div class="w-1/3 text-left">
-        <router-link :to="`/${repository.orgName}/${repository.name}/issues`"
+        <router-link :to="'/' + repository.orgName + '/' + repository.repositoryName + '/issues'"
                      class="text-base font-bold text-blue-500 hover:text-blue-800">
-          {{ repository.name }}
+          {{ repository.repositoryName }}
         </router-link>
       </div>
       <div class="w-1/3 text-center flex items-center justify-center">
         <font-awesome-icon
-            v-if="formatDate(repository.latestUpdateAt).isRecent"
+            v-if="formatDate(repository.repositoryLatestUpdateAt).isRecent"
             icon="bell"
             class="mr-2 text-sky-500"
         />
         <p :class="[
            'text-base',
-           formatDate(repository.latestUpdateAt).isRecent ? 'font-bold text-sky-500' : 'text-gray-700'
+           formatDate(repository.repositoryLatestUpdateAt).isRecent ? 'font-bold text-sky-500' : 'text-gray-700'
          ]">
-          {{ formatDate(repository.latestUpdateAt).formattedDate }}
+          {{ formatDate(repository.repositoryLatestUpdateAt).formattedDate }}
         </p>
       </div>
     </div>
@@ -92,7 +95,7 @@
     <!-- 페이지네이션 -->
     <div v-if="!hideListName" class="pagination flex justify-center mt-4">
       <button v-for="page in totalPages" :key="page"
-              :class="['mx-1 px-3 py-1 rounded', currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200']"
+              :class="['mx-1 px-3 py-1 rounded', currentPage + 1 === page ? 'bg-blue-500 text-white' : 'bg-gray-200']"
               @click="changePage(page)">
         {{ page }}
       </button>
@@ -104,7 +107,7 @@
 
 <script>
 import {computed, defineComponent, onMounted, ref} from 'vue';
-import {useAuthStore, useRepositoryStore} from '@/store/pinia';
+import {useAuthStore} from '@/store/pinia';
 import {useRoute} from 'vue-router';
 import clickOutside from '@/directives/clickOutside';
 import axios from 'axios';
@@ -124,7 +127,7 @@ export default defineComponent({
       default: false
     }
   },
-  setup(props) {
+  setup() {
     const route = useRoute();
     const hideAddBox = computed(() => route.meta.hideAddBox);
     const hideListName = computed(() => route.meta.hideListName);
@@ -133,84 +136,34 @@ export default defineComponent({
     const showNotification = ref(false);
     const notificationType = ref('success');
     const notificationMessage = ref('');
-    const repositoriesStore = useRepositoryStore();
-    const repositories = computed(() => repositoriesStore.repositories);
-
-    const sortBy = ref('latestUpdateAt');
+    const repositories = ref([]);
+    const currentPage = ref(0);
+    const totalElements = ref(0);
+    const totalPages = ref(0);
+    const sortBy = ref('repositoryLatestUpdateAt');
     const sortOrder = ref('desc');
 
-    const filteredRepositories = computed(() => {
-      return props.starred
-          ? repositories.value.map(org => ({
-            ...org,
-            org: {
-              ...org.org,
-              repositories: org.org.repositories.filter(repository => repository.starred)
-            }
-          }))
-          : repositories.value;
-    });
-
-    const itemsPerPage = 15;
-    const currentPage = ref(1);
-
-    const sortedRepositories = computed(() => {
-      return filteredRepositories.value.flatMap(org =>
-          org.org.repositories.map(repo => ({
-            ...repo,
-            orgName: org.org.name,
-            orgId: org.org.id
-          }))
-      ).sort((a, b) => {
-        if (a.starred !== b.starred) {
-          return b.starred ? 1 : -1;
-        }
-
-        if (sortBy.value === 'latestUpdateAt') {
-          return sortOrder.value === 'asc'
-              ? new Date(a.latestUpdateAt) - new Date(b.latestUpdateAt)
-              : new Date(b.latestUpdateAt) - new Date(a.latestUpdateAt);
-        } else if (sortBy.value === 'orgName') {
-          return sortOrder.value === 'asc'
-              ? a.orgName.localeCompare(b.orgName)
-              : b.orgName.localeCompare(a.orgName);
-        } else if (sortBy.value === 'name') {
-          return sortOrder.value === 'asc'
-              ? a.name.localeCompare(b.name)
-              : b.name.localeCompare(a.name);
-        }
-      });
-    });
-
-    const paginatedRepositories = computed(() => {
-      const startIndex = (currentPage.value - 1) * itemsPerPage;
-      return sortedRepositories.value.slice(startIndex, startIndex + itemsPerPage);
-    });
-
-    const totalPages = computed(() =>
-        Math.ceil(sortedRepositories.value.length / itemsPerPage)
-    );
-
-    const changePage = (page) => {
-      currentPage.value = page;
+    const changePage = async (page) => {
+      try {
+        currentPage.value = page - 1;
+        const data = await getRepositories(currentPage.value, sortBy.value, sortOrder.value, hideListName.value);
+        repositories.value = data.subscriptionListDtos;
+        totalPages.value = data.totalPages;
+        totalElements.value = data.totalElements;
+      } catch (error) {
+        console.error('Error changing page:', error);
+        showNotificationMessage('error', '페이지 변경 중 오류가 발생했습니다.');
+      }
     };
 
-    const changeSort = (newSortBy) => {
+    const changeSort = async (newSortBy) => {
       if (sortBy.value === newSortBy) {
         sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
       } else {
         sortBy.value = newSortBy;
         sortOrder.value = 'asc';
       }
-    };
-
-    const getSortDescription = () => {
-      const sortDescription = {
-        orgName: '조직 이름',
-        name: '리포지토리 이름',
-        latestUpdateAt: '최근 업데이트'
-      };
-      return `${sortDescription[sortBy.value]} (${sortOrder.value === 'asc' ? '오름차순' : '내림차순'})`;
+      await changePage(1);
     };
 
     const toggleStar = async (orgId, repoId) => {
@@ -218,10 +171,10 @@ export default defineComponent({
         const authStore = useAuthStore();
         const accessToken = authStore.accessToken;
 
-        const starredCount = sortedRepositories.value.filter(repo => repo.starred).length;
-        const repo = sortedRepositories.value.find(r => r.id === repoId);
+        const starredCount = repositories.value.filter(repo => repo.repositoryStarred).length;
+        const repo = repositories.value.find(r => r.githubRepositoryId === repoId);
 
-        if (!repo.starred && starredCount >= 10) {
+        if (!repo.repositoryStarred && starredCount >= 10) {
           showNotificationMessage('error', '즐겨찾기는 최대 10개만 설정 가능합니다.');
           return;
         }
@@ -232,12 +185,9 @@ export default defineComponent({
           }
         });
 
-        const org = repositories.value.find(o => o.org.id === orgId);
-        if (org) {
-          const repo = org.org.repositories.find(r => r.id === repoId);
-          if (repo) {
-            repo.starred = !repo.starred;
-          }
+        repo.repositoryStarred = !repo.repositoryStarred;
+        if (hideListName.value && !repo.repositoryStarred) {
+          repositories.value = repositories.value.filter(r => r.githubRepositoryId !== repoId);
         }
       } catch (error) {
         console.error('Error toggling star:', error);
@@ -272,9 +222,7 @@ export default defineComponent({
               .then(() => {
                 showNotificationMessage('success', '리포지토리 추가 완료');
                 cancelAdding();
-                getRepositories().then(data => {
-                  repositories.value = data;
-                });
+                changePage(1);
               })
               .catch(error => {
                 console.error('Error adding repository:', error);
@@ -291,26 +239,24 @@ export default defineComponent({
     const allSelected = ref(false);
 
     const toggleSelectAll = () => {
-      repositories.value.forEach(org => {
-        org.org.repositories.forEach(repo => {
-          repo.selected = allSelected.value;
-        });
+      repositories.value.forEach(repo => {
+        repo.selected = allSelected.value;
       });
     };
 
     const hasSelectedRepositories = computed(() => {
-      return repositories.value.some(org => org.org.repositories.some(repo => repo.selected));
+      return repositories.value.some(repo => repo.selected);
     });
 
     const deleteSelectedRepositories = async () => {
-      const selectedRepoIds = repositories.value.flatMap(org =>
-          org.org.repositories.filter(repo => repo.selected).map(repo => repo.id)
-      );
+      const selectedRepoIds = repositories.value
+          .filter(repo => repo.selected)
+          .map(repo => repo.githubRepositoryId);
 
       try {
         await Promise.all(selectedRepoIds.map(repoId => deleteRepository(repoId)));
         showNotificationMessage('success', '선택한 리포지토리가 삭제되었습니다.');
-        repositories.value = await getRepositories();
+        await changePage(1);
         allSelected.value = false;
       } catch (error) {
         console.error('Error deleting repositories:', error);
@@ -342,13 +288,20 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      repositories.value = await getRepositories();
+      try {
+        const data = await getRepositories(0, sortBy.value, sortOrder.value, hideListName.value);
+        repositories.value = data.subscriptionListDtos;
+        currentPage.value = data.currentPage;
+        totalElements.value = data.totalElements;
+        totalPages.value = data.totalPages;
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+        showNotificationMessage('error', '데이터 로딩 중 오류가 발생했습니다.');
+      }
     });
 
     return {
       repositories,
-      filteredRepositories,
-      paginatedRepositories,
       toggleStar,
       hideAddBox,
       hideListName,
@@ -371,41 +324,32 @@ export default defineComponent({
       changePage,
       sortBy,
       sortOrder,
-      changeSort,
-      getSortDescription
+      changeSort
     };
   }
 });
 
-async function getRepositories() {
+async function getRepositories(page = 0, sort = 'repositoryLatestUpdateAt', order = 'desc', hideListName = false) {
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
-  const repositoriesStore = useRepositoryStore();
 
   try {
     const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscription`, {
+      params: {
+        page,
+        sort,
+        order,
+        starred: hideListName // hideListName이 true면 starred를 true로, 아니면 false로 설정
+      },
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     });
 
-    const repositories = response.data.map(item => ({
-      ...item,
-      org: {
-        ...item.org,
-        repositories: item.org.repositories.map(repo => ({
-          ...repo,
-          selected: false
-        }))
-      }
-    }));
-
-    repositoriesStore.setRepositories(repositories);
-    console.log(repositories);
-    return repositories;
+    return response.data;
   } catch (error) {
     console.error('Error fetching repositories:', error);
-    return error;
+    throw error;
   }
 }
 
