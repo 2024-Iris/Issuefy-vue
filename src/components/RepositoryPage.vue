@@ -179,7 +179,7 @@ export default defineComponent({
           return;
         }
 
-        await axios.put(`${process.env.VUE_APP_API_URL}/subscription/star/${repoId}`, {}, {
+        await axios.put(`${process.env.VUE_APP_API_URL}/subscriptions/star/${repoId}`, {}, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -334,7 +334,7 @@ async function getRepositories(page = 0, sort = 'repositoryLatestUpdateAt', orde
   const accessToken = authStore.accessToken;
 
   try {
-    const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscription`, {
+    const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscriptions`, {
       params: {
         page,
         sort,
@@ -357,7 +357,7 @@ async function requestAddRepository(repositoryUrl) {
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
-  const response = await axios.post(`${process.env.VUE_APP_API_URL}/subscription`,
+  const response = await axios.post(`${process.env.VUE_APP_API_URL}/subscriptions`,
       {
         repositoryUrl: repositoryUrl
       },
@@ -375,7 +375,7 @@ async function deleteRepository(repositoryId) {
   const accessToken = authStore.accessToken;
 
   try {
-    await axios.delete(`${process.env.VUE_APP_API_URL}/subscription/${repositoryId}`, {
+    await axios.delete(`${process.env.VUE_APP_API_URL}/subscriptions/${repositoryId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
