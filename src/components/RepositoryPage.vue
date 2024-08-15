@@ -80,8 +80,8 @@
       <div class="w-1/3 text-center flex items-center justify-center">
         <font-awesome-icon
             v-if="formatDate(repository.repositoryLatestUpdateAt).isRecent"
-            icon="bell"
             class="mr-2 text-sky-500"
+            icon="bell"
         />
         <p :class="[
            'text-base',

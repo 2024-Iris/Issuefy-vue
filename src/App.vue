@@ -23,7 +23,7 @@
       <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap">
         <div class="relative mr-2">
           <button class="relative" @click="toggleNotifications">
-            <font-awesome-icon icon="bell" style="color: #B197FC; font-size: 1.25rem;" />
+            <font-awesome-icon icon="bell" style="color: #B197FC; font-size: 1.25rem;"/>
             <span v-if="unreadCount > 0"
                   class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
               {{ unreadCount }}
@@ -68,8 +68,11 @@
             </div>
           </div>
         </div>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/">Home</router-link>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/repositories">Repositories</router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/">Home
+        </router-link>
+        <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/repositories">
+          Repositories
+        </router-link>
       </div>
       <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap ml-4">
         <div class="flex items-center space-x-2">
