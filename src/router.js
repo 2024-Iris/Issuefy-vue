@@ -98,7 +98,7 @@ const router = createRouter({
 axios.interceptors.response.use(
     response => response,
     error => {
-        if (error.response && error.response.status === 403) {
+        if (error.response && error.response.status === 401) {
             const authStore = useAuthStore();
             authStore.clearCredentials();
             router.push('/expired');
