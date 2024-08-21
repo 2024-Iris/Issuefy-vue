@@ -227,6 +227,7 @@ export default {
           headers: {
             'Authorization': `Bearer ${accessToken}`
           },
+          keepalive: true,
           onopen(response) {
             if (response.ok && response.headers.get('content-type') === 'text/event-stream') {
               console.log('SSE connection opened.');
