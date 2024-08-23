@@ -21,9 +21,9 @@
       </div>
     </div>
     <div v-for="issue in filteredIssues" :key="issue.id"
-         class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
+         class="issue bg-white border-b border-gray-200 py-6 px-8 flex justify-between items-center hover:bg-gray-100">
       <div class="w-3/5 text-left">
-        <div class="flex items-center mb-2">
+        <div class="flex items-center mb-4">
           <button class="text-yellow-500 mr-2" @click="toggleStar(issue.id)">
             {{ issue.starred ? '★' : '☆' }}
           </button>
