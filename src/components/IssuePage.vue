@@ -8,13 +8,13 @@
         이슈 제목
         <span v-if="sort === 'title'">{{ order === 'asc' ? '▲' : '▼' }}</span>
       </div>
-      <div class="w-2/5 text-left text-base flex">
+      <div class="w-4/5 text-left text-base flex justify-end">
         <span class="w-1/5">상태</span>
-        <span class="w-2/5 cursor-pointer" @click="changeSort('createdAt')">
+        <span class="w-1/5 cursor-pointer" @click="changeSort('createdAt')">
           생성일
           <span v-if="sort === 'createdAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
         </span>
-        <span class="w-2/5 cursor-pointer" @click="changeSort('updatedAt')">
+        <span class="w-1/5 cursor-pointer" @click="changeSort('updatedAt')">
           수정일
           <span v-if="sort === 'updatedAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
         </span>
@@ -28,30 +28,30 @@
             {{ issue.starred ? '★' : '☆' }}
           </button>
           <router-link :to="`/${org}/${repository}/issues/` + issue.id"
-                       class="text-base font-bold text-blue-500 hover:text-blue-800">
+                       class="text-base font-bold text-black-500 hover:text-blue-800">
             {{ issue.title }}
           </router-link>
         </div>
         <div class="flex items-center text-xxs mt-2">
           <span v-for="label in issue.labels" :key="label.name"
-                class="inline-block rounded-full px-2 py-1 text-xxs font-semibold mr-2"
+                class="inline-block rounded-full px-2 py-0.5 text-xxs font-semibold mr-1"
                 :style="{ backgroundColor: `#${label.color}`, color: getContrastColor(label.color) }">
             {{ label.name }}
           </span>
         </div>
       </div>
-      <div class="w-2/5 text-left flex">
-        <div class="w-1/5 flex items-center">
-          <span :class="{'text-green-500': issue.state === 'open', 'text-red-500': issue.state === 'closed'}"
-                class="text-sm font-semibold">
+      <div class="w-2/5 text-center justify-between flex">
+        <div class="w-2/5 flex text-center">
+          <div :class="{'text-green-500': issue.state === 'open', 'text-red-500': issue.state === 'closed'}"
+               class="text-sm font-semibold">
             {{ issue.state === 'open' ? '●' : '○' }} {{ issue.state }}
-          </span>
+          </div>
         </div>
-        <div class="w-2/5 flex flex-col">
+        <div class="w-1/5 text-center flex flex-col">
           <p class="text-sm text-gray-600">{{ formatDate(issue.createdAt).date }}</p>
           <p class="text-sm text-gray-600">{{ formatDate(issue.createdAt).time }}</p>
         </div>
-        <div class="w-2/5 flex flex-col">
+        <div class="w-1/5 text-center flex flex-col">
           <p class="text-sm text-gray-600">{{ formatDate(issue.updatedAt).date }}</p>
           <p class="text-sm text-gray-600">{{ formatDate(issue.updatedAt).time }}</p>
         </div>
@@ -70,9 +70,9 @@
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, ref, watch } from 'vue';
-import { useAuthStore } from '@/store/pinia';
-import { useRoute } from "vue-router";
+import {computed, defineComponent, onMounted, ref, watch} from 'vue';
+import {useAuthStore} from '@/store/pinia';
+import {useRoute} from "vue-router";
 import axios from 'axios';
 
 export default defineComponent({
@@ -163,11 +163,15 @@ export default defineComponent({
     };
 
     const formatDate = (dateString) => {
-      if (!dateString) return { date: 'N/A', time: 'N/A' };
+      if (!dateString) return {date: 'N/A', time: 'N/A'};
       const date = new Date(dateString);
       return {
-        date: date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.'),
-        time: date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })
+        date: date.toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).replace(/\. /g, '.'),
+        time: date.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit', hour12: false})
       };
     };
 
