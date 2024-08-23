@@ -4,25 +4,25 @@
       <h1 v-if="!hideListName" class="text-base text-left">이슈 목록</h1>
     </div>
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
-      <div class="w-3/5 text-left text-base cursor-pointer" @click="changeSort('title')">
+      <div class="w-2/3 text-left text-base cursor-pointer" @click="changeSort('title')">
         이슈 제목
         <span v-if="sort === 'title'">{{ order === 'asc' ? '▲' : '▼' }}</span>
       </div>
-      <div class="w-4/5 text-left text-base flex justify-end">
-        <span class="w-1/5">상태</span>
-        <span class="w-1/5 cursor-pointer" @click="changeSort('createdAt')">
+      <div class="w-1/3 text-left text-base flex justify-between">
+        <span class="w-1/3">상태</span>
+        <span class="w-1/3 cursor-pointer" @click="changeSort('createdAt')">
           생성일
           <span v-if="sort === 'createdAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
         </span>
-        <span class="w-1/5 cursor-pointer" @click="changeSort('updatedAt')">
+        <span class="w-1/3 cursor-pointer" @click="changeSort('updatedAt')">
           수정일
           <span v-if="sort === 'updatedAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
         </span>
       </div>
     </div>
     <div v-for="issue in filteredIssues" :key="issue.id"
-         class="issue bg-white border-b border-gray-200 py-6 px-8 flex justify-between items-center hover:bg-gray-100">
-      <div class="w-3/5 text-left">
+         class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
+      <div class="w-2/3 text-left">
         <div class="flex items-center mb-4">
           <button class="text-yellow-500 mr-2" @click="toggleStar(issue.id)">
             {{ issue.starred ? '★' : '☆' }}
@@ -40,18 +40,18 @@
           </span>
         </div>
       </div>
-      <div class="w-2/5 text-center justify-between flex">
-        <div class="w-2/5 flex text-center">
+      <div class="w-1/3 text-center justify-between flex">
+        <div class="w-1/3 flex text-center">
           <div :class="{'text-green-500': issue.state === 'open', 'text-red-500': issue.state === 'closed'}"
                class="text-sm font-semibold">
             {{ issue.state === 'open' ? '●' : '○' }} {{ issue.state }}
           </div>
         </div>
-        <div class="w-1/5 text-center flex flex-col">
+        <div class="w-1/3 text-left flex flex-col">
           <p class="text-sm text-gray-600">{{ formatDate(issue.createdAt).date }}</p>
           <p class="text-sm text-gray-600">{{ formatDate(issue.createdAt).time }}</p>
         </div>
-        <div class="w-1/5 text-center flex flex-col">
+        <div class="w-1/3 text-left flex flex-col">
           <p class="text-sm text-gray-600">{{ formatDate(issue.updatedAt).date }}</p>
           <p class="text-sm text-gray-600">{{ formatDate(issue.updatedAt).time }}</p>
         </div>
