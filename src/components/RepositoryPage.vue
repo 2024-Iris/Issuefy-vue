@@ -43,17 +43,17 @@
       <div class="w-1/12 text-left">
         <input v-model="allSelected" type="checkbox" @change="toggleSelectAll">
       </div>
-      <div class="w-1/3 text-left text-base cursor-pointer" @click="changeSort('orgName')">
+      <div class="w-1/3 text-left text-base cursor-pointer" @click="changeSort('org_name')">
         조직 이름
-        <span v-if="sortBy === 'orgName'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+        <span v-if="sortBy === 'org_name'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
       </div>
-      <div class="w-1/3 text-left text-base cursor-pointer" @click="changeSort('repositoryName')">
+      <div class="w-1/3 text-left text-base cursor-pointer" @click="changeSort('repository_name')">
         리포지토리 이름
-        <span v-if="sortBy === 'repositoryName'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+        <span v-if="sortBy === 'repository_name'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
       </div>
-      <div class="w-1/3 text-center text-base cursor-pointer" @click="changeSort('repositoryLatestUpdateAt')">
+      <div class="w-1/3 text-center text-base cursor-pointer" @click="changeSort('repository_latest_updateAt')">
         최근 업데이트
-        <span v-if="sortBy === 'repositoryLatestUpdateAt'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+        <span v-if="sortBy === 'repository_latest_updateAt'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
       </div>
     </div>
 
