@@ -1,20 +1,22 @@
 <template>
   <div class="container mx-auto mt-6 max-w-7xl font-sans">
-    <div class="text-black py-4 px-6 flex justify-between items-center font-bold">
-      <h1 v-if="!hideListName" class="text-base text-left">이슈 목록</h1>
-    </div>
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
-      <div class="w-2/3 text-left text-base cursor-pointer" @click="changeSort('title')">
-        이슈 제목
-        <span v-if="sort === 'title'">{{ order === 'asc' ? '▲' : '▼' }}</span>
+      <div class="w-3/4 text-left text-base flex items-center">
+        <div v-if="$route.meta.hideListName" class="mr-4 w-1/4">리포지토리</div>
+        <div class="w-3/4">
+          <span class="cursor-pointer" @click="changeSort('title')">
+            이슈 제목
+            <span v-if="sort === 'title'">{{ order === 'asc' ? '▲' : '▼' }}</span>
+          </span>
+        </div>
       </div>
-      <div class="w-1/3 text-left text-base flex justify-between">
-        <span class="w-1/3">상태</span>
-        <span class="w-1/3 cursor-pointer" @click="changeSort('createdAt')">
+      <div class="w-1/4 text-left text-base flex justify-between">
+        <span class="w-1/3 text-center">상태</span>
+        <span class="w-1/3 text-center cursor-pointer" @click="changeSort('createdAt')">
           생성일
           <span v-if="sort === 'createdAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
         </span>
-        <span class="w-1/3 cursor-pointer" @click="changeSort('updatedAt')">
+        <span class="w-1/3 text-center cursor-pointer" @click="changeSort('updatedAt')">
           수정일
           <span v-if="sort === 'updatedAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
         </span>
@@ -22,36 +24,39 @@
     </div>
     <div v-for="issue in filteredIssues" :key="issue.id"
          class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
-      <div class="w-2/3 text-left">
-        <div class="flex items-center mb-4">
-          <button class="text-yellow-500 mr-2" @click="toggleStar(issue.id)">
-            {{ issue.starred ? '★' : '☆' }}
-          </button>
-          <router-link :to="`/${org}/${repository}/issues/` + issue.id"
-                       class="text-base font-bold text-black-500 hover:text-blue-800">
-            {{ issue.title }}
-          </router-link>
-        </div>
-        <div class="flex items-center text-xxs mt-2">
-          <span v-for="label in issue.labels" :key="label.name"
-                class="inline-block rounded-full px-2 py-0.5 text-xxs font-semibold mr-1"
-                :style="{ backgroundColor: `#${label.color}`, color: getContrastColor(label.color) }">
-            {{ label.name }}
-          </span>
+      <div class="w-3/4 text-left flex items-center">
+        <div v-if="$route.meta.hideListName" class="mr-4 w-1/4 truncate">{{ issue.repositoryName }}</div>
+        <div class="w-3/4 overflow-hidden">
+          <div class="flex items-center mb-4">
+            <button class="text-yellow-500 mr-2 flex-shrink-0" @click="toggleStar(issue.id)">
+              {{ issue.starred ? '★' : '☆' }}
+            </button>
+            <router-link :to="`/${org}/${repository}/issues/` + issue.id"
+                         class="text-base font-bold text-black-500 hover:text-blue-800 overflow-hidden text-ellipsis">
+              {{ issue.title }}
+            </router-link>
+          </div>
+          <div class="flex items-center text-xxs mt-2 flex-wrap">
+            <span v-for="label in issue.labels" :key="label.name"
+                  class="inline-block rounded-full px-2 py-0.5 text-xxs font-semibold mr-1 mb-1"
+                  :style="{ backgroundColor: `#${label.color}`, color: getContrastColor(label.color) }">
+              {{ label.name }}
+            </span>
+          </div>
         </div>
       </div>
-      <div class="w-1/3 text-center justify-between flex">
-        <div class="w-1/3 flex text-center">
+      <div class="w-1/4 flex justify-between items-center">
+        <div class="w-1/3 text-center">
           <div :class="{'text-green-500': issue.state === 'open', 'text-red-500': issue.state === 'closed'}"
                class="text-sm font-semibold">
             {{ issue.state === 'open' ? '●' : '○' }} {{ issue.state }}
           </div>
         </div>
-        <div class="w-1/3 text-left flex flex-col">
+        <div class="w-1/3 text-center flex flex-col">
           <p class="text-sm text-gray-600">{{ formatDate(issue.createdAt).date }}</p>
           <p class="text-sm text-gray-600">{{ formatDate(issue.createdAt).time }}</p>
         </div>
-        <div class="w-1/3 text-left flex flex-col">
+        <div class="w-1/3 text-center flex flex-col">
           <p class="text-sm text-gray-600">{{ formatDate(issue.updatedAt).date }}</p>
           <p class="text-sm text-gray-600">{{ formatDate(issue.updatedAt).time }}</p>
         </div>
@@ -202,7 +207,8 @@ export default defineComponent({
       sort,
       order,
       changeSort,
-      getContrastColor
+      getContrastColor,
+      repositoryName
     };
   }
 });
