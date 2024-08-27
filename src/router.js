@@ -31,7 +31,8 @@ const routes = [
         meta: {
             requiresAuth: true,
             hideAddBox: false,
-            hideListName: false
+            hideListName: false,
+            showBreadcrumbs: true
         },
     },
     {
@@ -40,7 +41,8 @@ const routes = [
         component: IssuePage,
         meta: {
             requiresAuth: true,
-            hideListName: false
+            hideListName: false,
+            showBreadcrumbs: true
         },
         props: true
     },
@@ -50,6 +52,7 @@ const routes = [
         component: IssueDetailPage,
         meta: {
             requiresAuth: true,
+            showBreadcrumbs: true
         },
         props: true
     },
