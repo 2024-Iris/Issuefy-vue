@@ -9,7 +9,7 @@
     </section>
 
     <section class="mt-2">
-      <IssueStarPage />
+      <IssueStarPage/>
     </section>
   </div>
 </template>
@@ -17,8 +17,8 @@
 <script>
 import RepositoryList from '@/components/RepositoryPage.vue'
 import IssueStarPage from '@/components/IssueStarPage.vue'
-import { useRoute } from "vue-router";
-import { computed } from "vue";
+import {useRoute} from "vue-router";
+import {computed} from "vue";
 
 export default {
   name: 'HomePage',

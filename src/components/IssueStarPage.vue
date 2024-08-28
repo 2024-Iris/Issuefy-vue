@@ -48,8 +48,8 @@
           </div>
           <div class="flex items-center text-xxs mt-2 flex-wrap">
             <span v-for="label in issue.labels" :key="label.name"
-                  class="inline-block rounded-full px-2 py-0.5 text-xxs font-semibold mr-1 mb-1"
-                  :style="{ backgroundColor: `#${label.color}`, color: getContrastColor(label.color) }">
+                  :style="{ backgroundColor: `#${label.color}`, color: getContrastColor(label.color) }"
+                  class="inline-block rounded-full px-2 py-0.5 text-xxs font-semibold mr-1 mb-1">
               {{ label.name }}
             </span>
           </div>
