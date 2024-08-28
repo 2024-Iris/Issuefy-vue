@@ -2,8 +2,7 @@
   <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
       <div class="w-3/4 text-left text-base flex items-center">
-        <div v-if="$route.meta.hideListName" class="mr-4 w-1/4">리포지토리</div>
-        <div class="w-3/4">
+        <div class="w-full">
           <span class="cursor-pointer" @click="changeSort('title')">
             이슈 제목
             <span v-if="sort === 'title'">{{ order === 'asc' ? '▲' : '▼' }}</span>
@@ -25,8 +24,7 @@
     <div v-for="issue in filteredIssues" :key="issue.id"
          class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
       <div class="w-3/4 text-left flex items-center">
-        <div v-if="$route.meta.hideListName" class="mr-4 w-1/4 truncate">{{ issue.repositoryName }}</div>
-        <div class="w-3/4 overflow-hidden">
+        <div class="w-full overflow-hidden">
           <div class="flex items-center mb-4">
             <button class="text-yellow-500 mr-2 flex-shrink-0" @click="toggleStar(issue.id)">
               {{ issue.starred ? '★' : '☆' }}
@@ -153,15 +151,16 @@ export default defineComponent({
 
     const toggleStar = async (id) => {
       try {
-        await axios.post(`${process.env.VUE_APP_API_URL}/subscriptions/${props.org}/${props.repository}/issues/${id}/star`, {}, {
+        const issue = issues.value.find(i => i.id === id);
+        if (!issue) return;
+
+        await axios.put(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star/${issue.githubIssueId}`, {}, {
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
           }
         });
-        const issue = issues.value.find(i => i.id === id);
-        if (issue) {
-          issue.starred = !issue.starred;
-        }
+
+        issue.starred = !issue.starred;
       } catch (error) {
         console.error('Error toggling star:', error);
       }
