@@ -217,10 +217,6 @@ export default defineComponent({
   font-size: 0.65rem;
 }
 
-.repository-header {
-  background-color: #f3f4f6;
-}
-
 a {
   transition: color 0.3s;
 }
