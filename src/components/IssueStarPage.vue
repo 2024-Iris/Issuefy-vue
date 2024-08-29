@@ -31,7 +31,7 @@
          class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
       <div class="w-3/4 text-left flex items-center">
         <div class="w-1/4 truncate mr-4 font-bold">
-          <router-link :to="`/${issue.orgName}/${issue.repositoryName}`"
+          <router-link :to="`/${issue.orgName}/${issue.repositoryName}/issues`"
                        class="text-base font-bold text-blue-500 hover:text-blue-800">
             {{ issue.repositoryName }}
           </router-link>
