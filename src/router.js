@@ -12,6 +12,7 @@ import IssuePage from "@/components/IssuePage.vue";
 import axios from "axios";
 import ExpiredPage from "@/components/ExpiredPage.vue";
 import IssueDetailPage from "@/components/IssueDetailPage.vue";
+import TestPage from "@/components/TestPage.vue";
 
 const routes = [
     {
@@ -90,6 +91,11 @@ const routes = [
         path: '/expired',
         name: 'expired',
         component: ExpiredPage,
+    },
+    {
+        path: '/test',
+        name: 'test',
+        component: TestPage,
     }
 ];
 

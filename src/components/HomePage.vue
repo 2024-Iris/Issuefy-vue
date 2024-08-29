@@ -5,6 +5,10 @@
     </div>
 
     <section class="mt-2">
+      <TestPage/>
+    </section>
+
+    <section class="mt-2">
       <RepositoryList :starred="true"/>
     </section>
 
@@ -19,12 +23,14 @@ import RepositoryList from '@/components/RepositoryPage.vue'
 import IssueStarPage from '@/components/IssueStarPage.vue'
 import {useRoute} from "vue-router";
 import {computed} from "vue";
+import TestPage from "@/components/TestPage.vue";
 
 export default {
   name: 'HomePage',
   components: {
     RepositoryList,
-    IssueStarPage
+    IssueStarPage,
+    TestPage
   },
   setup() {
     const route = useRoute()
