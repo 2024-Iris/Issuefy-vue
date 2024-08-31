@@ -32,7 +32,6 @@ const routes = [
             requiresAuth: true,
             hideAddBox: false,
             hideListName: false,
-            showBreadcrumbs: true
         },
     },
     {
