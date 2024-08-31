@@ -2,29 +2,13 @@
   <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
       <div class="w-3/4 text-left text-base flex items-center">
-        <div class="w-1/4">
-          <span class="cursor-pointer" @click="changeSort('repositoryName')">
-            리포지토리
-            <span v-if="sort === 'repositoryName'">{{ order === 'asc' ? '▲' : '▼' }}</span>
-          </span>
-        </div>
-        <div class="w-3/4">
-          <span class="cursor-pointer" @click="changeSort('title')">
-            이슈 제목
-            <span v-if="sort === 'title'">{{ order === 'asc' ? '▲' : '▼' }}</span>
-          </span>
-        </div>
+        <div class="w-1/4">리포지토리</div>
+        <div class="w-3/4">이슈 제목</div>
       </div>
       <div class="w-1/4 text-left text-base flex justify-between">
         <span class="w-1/3 text-center">상태</span>
-        <span class="w-1/3 text-center cursor-pointer" @click="changeSort('createdAt')">
-          생성일
-          <span v-if="sort === 'createdAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
-        </span>
-        <span class="w-1/3 text-center cursor-pointer" @click="changeSort('updatedAt')">
-          수정일
-          <span v-if="sort === 'updatedAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
-        </span>
+        <span class="w-1/3 text-center">생성일</span>
+        <span class="w-1/3 text-center">수정일</span>
       </div>
     </div>
     <div v-for="issue in issues" :key="issue.id"
@@ -97,16 +81,12 @@ export default defineComponent({
     const currentPage = ref(0);
     const totalElements = ref(0);
     const totalPages = ref(0);
-    const sort = ref('updatedAt');
-    const order = ref('desc');
 
     const fetchIssues = async () => {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star`, {
           params: {
-            page: currentPage.value,
-            sort: sort.value,
-            order: order.value
+            page: currentPage.value
           },
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
@@ -124,17 +104,6 @@ export default defineComponent({
     };
 
     onMounted(fetchIssues);
-
-    const changeSort = (newSort) => {
-      if (sort.value === newSort) {
-        order.value = order.value === 'asc' ? 'desc' : 'asc';
-      } else {
-        sort.value = newSort;
-        order.value = 'desc';
-      }
-      currentPage.value = 0;
-      fetchIssues();
-    };
 
     const toggleStar = async (id) => {
       try {
@@ -191,9 +160,6 @@ export default defineComponent({
       currentPage,
       totalPages,
       changePage,
-      sort,
-      order,
-      changeSort,
       getContrastColor
     };
   }
