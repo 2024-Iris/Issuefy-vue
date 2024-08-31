@@ -21,15 +21,15 @@
         </span>
       </div>
     </div>
-    <div v-for="issue in filteredIssues" :key="issue.id"
+    <div v-for="issue in filteredIssues" :key="issue.githubIssueNumber"
          class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
       <div class="w-3/4 text-left flex items-center">
         <div class="w-full overflow-hidden">
           <div class="flex items-center mb-4">
-            <button class="text-yellow-500 mr-2 flex-shrink-0" @click="toggleStar(issue.id)">
+            <button class="text-yellow-500 mr-2 flex-shrink-0" @click="toggleStar(issue.githubIssueNumber)">
               {{ issue.starred ? '★' : '☆' }}
             </button>
-            <router-link :to="`/${org}/${repository}/issues/` + issue.id"
+            <router-link :to="`/${org}/${repository}/issues/` + issue.githubIssueNumber"
                          class="text-base font-bold text-black-500 hover:text-blue-800 overflow-hidden text-ellipsis">
               {{ issue.title }}
             </router-link>
