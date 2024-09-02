@@ -13,7 +13,9 @@
           </span>
           <span class="text-gray-600 text-sm flex items-center">
             <img :src="issue.user.avatar_url" alt="User Avatar" class="w-5 h-5 rounded-full mr-1">
-            <strong>{{ issue.user.login }}</strong> opened this issue on {{ formatDate(issue.created_at) }} · {{ comments.length }} comments
+            <strong>{{ issue.user.login }}</strong> opened this issue on {{
+              formatDate(issue.created_at)
+            }} · {{ comments.length }} comments
           </span>
         </div>
       </div>
@@ -109,6 +111,9 @@ export default {
     const formatDate = (dateString) => {
       if (!dateString) return 'N/A';
       const date = new Date(dateString);
+
+      const kstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000));
+
       return new Intl.DateTimeFormat('ko-KR', {
         year: 'numeric',
         month: 'long',
@@ -117,7 +122,7 @@ export default {
         minute: '2-digit',
         hour12: false,
         timeZone: 'Asia/Seoul'
-      }).format(date);
+      }).format(kstDate);
     };
 
     const getContrastColor = (hexcolor) => {
@@ -165,7 +170,7 @@ export default {
   word-break: normal;
   word-wrap: normal;
   padding: 0.2em 0.4em;
-  background-color: rgba(175,184,193,0.2);
+  background-color: rgba(175, 184, 193, 0.2);
   border-radius: 6px;
 }
 
