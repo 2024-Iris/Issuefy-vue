@@ -120,7 +120,11 @@ export default defineComponent({
           }
         });
         const data = response.data;
-        issues.value = data.issues;
+        issues.value = data.issues.map(issue => ({
+          ...issue,
+          id: issue.id,
+          githubIssueNumber: issue.githubIssueNumber,
+        }));
         currentPage.value = data.currentPage;
         totalElements.value = data.totalElements;
         totalPages.value = data.totalPages;
@@ -149,12 +153,12 @@ export default defineComponent({
       fetchIssues();
     };
 
-    const toggleStar = async (id) => {
+    const toggleStar = async (githubIssueNumber) => {
       try {
-        const issue = issues.value.find(i => i.id === id);
+        const issue = issues.value.find(i => i.githubIssueNumber === githubIssueNumber);
         if (!issue) return;
 
-        await axios.put(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star/${issue.githubIssueId}`, {}, {
+        await axios.put(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star/${githubIssueNumber}`, {}, {
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
           }
