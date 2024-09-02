@@ -57,43 +57,22 @@
 </template>
 
 <script>
-import {onMounted, ref} from 'vue';
-import {useAuthStore} from '@/store/pinia';
-import axios from 'axios';
-import MarkdownIt from 'markdown-it';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css';
+import { onMounted, ref, getCurrentInstance } from 'vue';
+import { useAuthStore } from '@/store/pinia';
 
 export default {
   name: 'IssueDetailPage',
   props: ['org', 'repository', 'issueId'],
   setup(props) {
+    const { proxy } = getCurrentInstance();
     const authStore = useAuthStore();
     const issue = ref({});
     const comments = ref([]);
     const isLoaded = ref(false);
 
-    const md = new MarkdownIt({
-      highlight: function (str, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-          try {
-            return '<pre class="hljs"><code>' +
-                hljs.highlight(str, {language: lang, ignoreIllegals: true}).value +
-                '</code></pre>';
-          } catch (error) {
-            console.error('Failed to highlight code block:', error);
-          }
-        }
-        return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
-      },
-      html: true,
-      linkify: true,
-      typographer: true
-    });
-
     const fetchIssueDetails = async () => {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/${props.org}/${props.repository}/issues/${props.issueId}`, {
+        const response = await proxy.$axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/${props.org}/${props.repository}/issues/${props.issueId}`, {
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
           }
@@ -134,7 +113,7 @@ export default {
     };
 
     const renderMarkdown = (content) => {
-      return md.render(content);
+      return proxy.$md.render(content);
     };
 
     return {
@@ -150,8 +129,6 @@ export default {
 </script>
 
 <style>
-@import 'highlight.js/styles/github.css';
-
 .markdown-body {
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -180,9 +157,5 @@ export default {
   white-space: pre;
   word-break: normal;
   word-wrap: normal;
-}
-
-.hljs {
-  background: transparent;
 }
 </style>
