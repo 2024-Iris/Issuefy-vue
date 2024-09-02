@@ -172,14 +172,22 @@ export default defineComponent({
 
     const formatDate = (dateString) => {
       if (!dateString) return {date: 'N/A', time: 'N/A'};
-      const date = new Date(dateString);
+
+      const date = new Date(new Date(dateString).getTime() + 9 * 60 * 60 * 1000);
+
       return {
         date: date.toLocaleDateString('ko-KR', {
           year: 'numeric',
           month: '2-digit',
-          day: '2-digit'
+          day: '2-digit',
+          timeZone: 'Asia/Seoul'
         }).replace(/\. /g, '.'),
-        time: date.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit', hour12: false})
+        time: date.toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Seoul'
+        })
       };
     };
 
