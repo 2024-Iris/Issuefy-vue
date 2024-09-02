@@ -12,6 +12,7 @@ import {useAuthStore} from "@/store/pinia"
 import axios from 'axios'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
+import 'github-markdown-css/github-markdown.css'
 import 'highlight.js/styles/github.css'
 
 library.add(faGithub, faCircleExclamation, faCheck, faBell)

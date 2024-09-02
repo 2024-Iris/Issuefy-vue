@@ -13,7 +13,7 @@
           </span>
           <span class="text-gray-600 text-sm flex items-center">
             <img :src="issue.user.avatar_url" alt="User Avatar" class="w-5 h-5 rounded-full mr-1">
-            <strong>{{ issue.user.login }}</strong> opened this issue on {{
+            <strong>{{ issue.user.login }}</strong> &nbsp; opened this issue on {{
               formatDate(issue.created_at)
             }} · {{ comments.length }} comments
           </span>
@@ -113,6 +113,7 @@ export default {
     };
 
     const renderMarkdown = (content) => {
+      if (!content) return '';
       return proxy.$md.render(content);
     };
 
@@ -128,34 +129,21 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .markdown-body {
+  font-size: 15px;
+  line-height: 1.5;
   word-wrap: break-word;
-  white-space: pre-wrap;
+}
+
+@media (max-width: 767px) {
+  .markdown-body {
+    padding: 15px;
+  }
 }
 
 .markdown-body pre {
-  white-space: pre;
-  overflow-x: auto;
-  padding: 16px;
-  background-color: #f6f8fa;
-  border-radius: 6px;
+  white-space: pre-wrap;
 }
 
-.markdown-body code {
-  white-space: pre;
-  word-break: normal;
-  word-wrap: normal;
-  padding: 0.2em 0.4em;
-  background-color: rgba(175, 184, 193, 0.2);
-  border-radius: 6px;
-}
-
-.markdown-body pre code {
-  background-color: transparent;
-  padding: 0;
-  white-space: pre;
-  word-break: normal;
-  word-wrap: normal;
-}
 </style>
