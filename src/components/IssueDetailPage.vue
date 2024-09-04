@@ -24,7 +24,7 @@
       <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex-grow overflow-x-auto">
           <div class="bg-white rounded-lg mb-2">
-            <div class="prose max-w-none text-gray-700 markdown-body" v-html="renderMarkdown(issue.body)"></div>
+            <div class="prose max-w-none text-gray-700 markdown-body" :innerHTML="renderMarkdown(issue.body)"></div>
           </div>
           <div v-if="issue.labels.length > 0" class="mt-2">
             <span v-for="label in issue.labels" :key="label.id"
@@ -47,7 +47,7 @@
         <div class="px-6 py-4">
           <div class="flex-grow">
             <div class="bg-white rounded-lg">
-              <div class="prose max-w-none text-gray-700 markdown-body" v-html="renderMarkdown(comment.body)"></div>
+              <div class="prose max-w-none text-gray-700 markdown-body" :innerHTML="renderMarkdown(comment.body)"></div>
             </div>
           </div>
         </div>
