@@ -59,6 +59,7 @@
 <script>
 import { onMounted, ref, getCurrentInstance } from 'vue';
 import { useAuthStore } from '@/store/pinia';
+import axios from "axios";
 
 export default {
   name: 'IssueDetailPage',
@@ -72,7 +73,7 @@ export default {
 
     const fetchIssueDetails = async () => {
       try {
-        const response = await proxy.$axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/${props.org}/${props.repository}/issues/${props.issueId}`, {
+        const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/${props.org}/${props.repository}/issues/${props.issueId}`, {
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
           }
