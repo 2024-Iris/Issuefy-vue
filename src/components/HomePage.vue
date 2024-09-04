@@ -5,7 +5,7 @@
     </div>
 
     <section class="mt-2">
-      <TestPage/>
+      <DashBoardPage/>
     </section>
 
     <section class="mt-2">
@@ -23,14 +23,14 @@ import RepositoryList from '@/components/RepositoryPage.vue'
 import IssueStarPage from '@/components/IssueStarPage.vue'
 import {useRoute} from "vue-router";
 import {computed} from "vue";
-import TestPage from "@/components/TestPage.vue";
+import DashBoardPage from "@/components/DashBoardPage.vue";
 
 export default {
   name: 'HomePage',
   components: {
     RepositoryList,
     IssueStarPage,
-    TestPage
+    DashBoardPage
   },
   setup() {
     const route = useRoute()

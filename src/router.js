@@ -12,7 +12,7 @@ import IssuePage from "@/components/IssuePage.vue";
 import axios from "axios";
 import ExpiredPage from "@/components/ExpiredPage.vue";
 import IssueDetailPage from "@/components/IssueDetailPage.vue";
-import TestPage from "@/components/TestPage.vue";
+import TestPage from "@/components/DashBoardPage.vue";
 
 const routes = [
     {
