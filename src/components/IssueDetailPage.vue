@@ -57,15 +57,16 @@
 </template>
 
 <script>
-import { onMounted, ref, getCurrentInstance } from 'vue';
-import { useAuthStore } from '@/store/pinia';
+import {getCurrentInstance, onMounted, ref} from 'vue';
+import {useAuthStore} from '@/store/pinia';
 import axios from "axios";
+import DOMPurify from 'dompurify';
 
 export default {
   name: 'IssueDetailPage',
   props: ['org', 'repository', 'issueId'],
   setup(props) {
-    const { proxy } = getCurrentInstance();
+    const {proxy} = getCurrentInstance();
     const authStore = useAuthStore();
     const issue = ref({});
     const comments = ref([]);
@@ -115,7 +116,8 @@ export default {
 
     const renderMarkdown = (content) => {
       if (!content) return '';
-      return proxy.$md.render(content);
+      const rawHtml = proxy.$md.render(content);
+      return DOMPurify.sanitize(rawHtml);
     };
 
     return {
