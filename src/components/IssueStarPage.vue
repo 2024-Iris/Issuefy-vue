@@ -2,34 +2,30 @@
   <div class="container mx-auto mt-6 max-w-7xl font-sans">
     <div class="repository-header bg-gray-100 py-4 px-6 flex justify-between items-center font-semibold">
       <div class="w-3/4 text-left text-base flex items-center">
-        <div class="w-full">
-          <span class="cursor-pointer" @click="changeSort('title')">
-            이슈 제목
-            <span v-if="sort === 'title'">{{ order === 'asc' ? '▲' : '▼' }}</span>
-          </span>
-        </div>
+        <div class="w-1/4">리포지토리</div>
+        <div class="w-3/4">이슈 제목</div>
       </div>
       <div class="w-1/4 text-left text-base flex justify-between">
         <span class="w-1/3 text-center">상태</span>
-        <span class="w-1/3 text-center cursor-pointer" @click="changeSort('createdAt')">
-          생성일
-          <span v-if="sort === 'createdAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
-        </span>
-        <span class="w-1/3 text-center cursor-pointer" @click="changeSort('updatedAt')">
-          수정일
-          <span v-if="sort === 'updatedAt'">{{ order === 'asc' ? '▲' : '▼' }}</span>
-        </span>
+        <span class="w-1/3 text-center">생성일</span>
+        <span class="w-1/3 text-center">수정일</span>
       </div>
     </div>
-    <div v-for="issue in filteredIssues" :key="issue.id"
+    <div v-for="issue in issues" :key="issue.id"
          class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
       <div class="w-3/4 text-left flex items-center">
-        <div class="w-full overflow-hidden">
+        <div class="w-1/4 truncate mr-4 font-bold">
+          <router-link :to="`/${issue.orgName}/${issue.repositoryName}/issues`"
+                       class="text-base font-bold text-blue-500 hover:text-blue-800">
+            {{ issue.repositoryName }}
+          </router-link>
+        </div>
+        <div class="w-3/4 overflow-hidden">
           <div class="flex items-center mb-4">
             <button class="text-yellow-500 mr-2 flex-shrink-0" @click="toggleStar(issue.id)">
               {{ issue.starred ? '★' : '☆' }}
             </button>
-            <router-link :to="`/${org}/${repository}/issues/` + issue.id"
+            <router-link :to="`/${issue.orgName}/${issue.repositoryName}/issues/${issue.id}`"
                          class="text-base font-bold text-black-500 hover:text-blue-800 overflow-hidden text-ellipsis">
               {{ issue.title }}
             </router-link>
@@ -62,7 +58,7 @@
     </div>
 
     <!-- 페이지네이션 -->
-    <div v-if="!hideListName" class="pagination flex justify-center mt-4">
+    <div class="pagination flex justify-center mt-4">
       <button v-for="page in totalPages" :key="page"
               :class="['mx-1 px-3 py-1 rounded', currentPage + 1 === page ? 'bg-blue-500 text-white' : 'bg-gray-200']"
               @click="changePage(page - 1)">
@@ -73,47 +69,24 @@
 </template>
 
 <script>
-import {computed, defineComponent, onMounted, ref, watch} from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import {useAuthStore} from '@/store/pinia';
-import {useRoute} from "vue-router";
 import axios from 'axios';
 
 export default defineComponent({
-  name: 'IssueList',
-  props: {
-    org: {
-      type: String,
-      required: true
-    },
-    repository: {
-      type: String,
-      required: true
-    },
-    starred: {
-      type: Boolean,
-      default: false
-    }
-  },
-  setup(props) {
+  name: 'IssueStarPage',
+  setup() {
     const authStore = useAuthStore();
-    const route = useRoute();
-    const hideListName = computed(() => route.meta.hideListName);
     const issues = ref([]);
     const currentPage = ref(0);
     const totalElements = ref(0);
     const totalPages = ref(0);
-    const repositoryName = ref('');
-    const sort = ref('updatedAt');
-    const order = ref('desc');
 
     const fetchIssues = async () => {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/${props.org}/${props.repository}/issues`, {
+        const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star`, {
           params: {
-            page: currentPage.value,
-            sort: sort.value,
-            order: order.value,
-            starred: hideListName.value
+            page: currentPage.value
           },
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
@@ -124,30 +97,13 @@ export default defineComponent({
         currentPage.value = data.currentPage;
         totalElements.value = data.totalElements;
         totalPages.value = data.totalPages;
-        repositoryName.value = data.repositoryName;
+        console.log('Fetched issues:', issues.value);
       } catch (error) {
-        console.error('Error fetching issues:', error);
+        console.error('Error fetching starred issues:', error);
       }
     };
 
     onMounted(fetchIssues);
-
-    watch(hideListName, fetchIssues);
-
-    const filteredIssues = computed(() => {
-      return hideListName.value ? issues.value.filter(issue => issue.starred) : issues.value;
-    });
-
-    const changeSort = (newSort) => {
-      if (sort.value === newSort) {
-        order.value = order.value === 'asc' ? 'desc' : 'asc';
-      } else {
-        sort.value = newSort;
-        order.value = 'desc';
-      }
-      currentPage.value = 0;
-      fetchIssues();
-    };
 
     const toggleStar = async (id) => {
       try {
@@ -161,6 +117,9 @@ export default defineComponent({
         });
 
         issue.starred = !issue.starred;
+        if (!issue.starred) {
+          issues.value = issues.value.filter(i => i.id !== id);
+        }
       } catch (error) {
         console.error('Error toggling star:', error);
       }
@@ -196,18 +155,12 @@ export default defineComponent({
 
     return {
       issues,
-      filteredIssues,
       toggleStar,
-      hideListName,
       formatDate,
       currentPage,
       totalPages,
       changePage,
-      sort,
-      order,
-      changeSort,
-      getContrastColor,
-      repositoryName
+      getContrastColor
     };
   }
 });
@@ -228,5 +181,9 @@ export default defineComponent({
 
 .text-xxs {
   font-size: 0.65rem;
+}
+
+a {
+  transition: color 0.3s;
 }
 </style>

@@ -9,14 +9,14 @@
     </section>
 
     <section class="mt-2">
-      <IssueList :org="org" :repository="repository" :starred="true"/>
+      <IssueStarPage/>
     </section>
   </div>
 </template>
 
 <script>
 import RepositoryList from '@/components/RepositoryPage.vue'
-import IssueList from '@/components/IssuePage.vue'
+import IssueStarPage from '@/components/IssueStarPage.vue'
 import {useRoute} from "vue-router";
 import {computed} from "vue";
 
@@ -24,14 +24,12 @@ export default {
   name: 'HomePage',
   components: {
     RepositoryList,
-    IssueList
+    IssueStarPage
   },
   setup() {
     const route = useRoute()
     const hideAddBox = computed(() => route.meta.hideAddBox)
     return {
-      org: 'elastic',
-      repository: 'elasticsearch',
       hideAddBox
     }
   },
