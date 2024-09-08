@@ -9,20 +9,11 @@
           <span class="text-sm font-medium text-gray-900">{{ $route.params.org }}</span>
           <span class="text-sm font-medium text-gray-500">/</span>
           <router-link
-            :to="`/${$route.params.org}/${$route.params.repository}/issues`"
-            class="text-sm font-medium text-gray-900 hover:text-blue-600"
+              :to="`/${$route.params.org}/${$route.params.repository}/issues`"
+              class="text-sm font-medium text-gray-900 hover:text-blue-600"
           >
             {{ $route.params.repository }}
           </router-link>
-          <template v-if="$route.params.issueId">
-            <span class="text-sm font-medium text-gray-500">/</span>
-            <router-link
-              :to="`/${$route.params.org}/${$route.params.repository}/issues/${$route.params.issueId}`"
-              class="text-sm font-medium text-gray-900 hover:text-blue-600"
-            >
-              {{ $route.meta.issueTitle }}
-            </router-link>
-          </template>
         </div>
       </div>
       <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap">
@@ -30,30 +21,30 @@
           <button class="relative" @click="toggleNotifications">
             <font-awesome-icon icon="bell" style="color: #B197FC; font-size: 1.25rem;"/>
             <span
-              v-if="unreadCount > 0"
-              class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1"
+                v-if="unreadCount > 0"
+                class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1"
             >
               {{ unreadCount }}
             </span>
           </button>
           <div
-            v-if="showNotifications"
-            v-click-outside="closeNotifications"
-            class="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+              v-if="showNotifications"
+              v-click-outside="closeNotifications"
+              class="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto"
           >
             <div v-if="visibleNotifications.length > 0">
               <div
-                v-for="notification in visibleNotifications"
-                :key="notification.userNotificationId"
-                :class="['p-3 border-b border-gray-200', {'bg-gray-50': !notification.read}]"
+                  v-for="notification in visibleNotifications"
+                  :key="notification.userNotificationId"
+                  :class="['p-3 border-b border-gray-200', {'bg-gray-50': !notification.read}]"
               >
                 <div class="flex flex-col">
                   <div class="flex justify-between items-start mb-2">
                     <span :class="{'font-semibold': !notification.read}" class="mr-2">
                       <span>새로운 이슈가 추가되었어요!</span>
                       <router-link
-                        :to="`/${notification.orgName}/${notification.repositoryName}/issues`"
-                        class="text-purple-500 hover:text-purple-700"
+                          :to="`/${notification.orgName}/${notification.repositoryName}/issues`"
+                          class="text-purple-500 hover:text-purple-700"
                       >
                         <div>
                           {{ notification.orgName + ' / ' + notification.repositoryName }}
@@ -64,9 +55,9 @@
                   <div class="flex justify-between items-center">
                     <span class="text-xs text-gray-500">{{ notification.formattedTime }}</span>
                     <button
-                      v-if="!notification.read"
-                      class="text-xs text-purple-500 hover:text-purple-700"
-                      @click="markAsRead(notification.userNotificationId)"
+                        v-if="!notification.read"
+                        class="text-xs text-purple-500 hover:text-purple-700"
+                        @click="markAsRead(notification.userNotificationId)"
                     >
                       읽음
                     </button>

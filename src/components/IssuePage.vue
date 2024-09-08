@@ -21,15 +21,15 @@
         </span>
       </div>
     </div>
-    <div v-for="issue in filteredIssues" :key="issue.id"
+    <div v-for="issue in filteredIssues" :key="issue.githubIssueNumber"
          class="issue bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center hover:bg-gray-100">
       <div class="w-3/4 text-left flex items-center">
         <div class="w-full overflow-hidden">
           <div class="flex items-center mb-4">
-            <button class="text-yellow-500 mr-2 flex-shrink-0" @click="toggleStar(issue.id)">
+            <button class="text-yellow-500 mr-2 flex-shrink-0" @click="toggleStar(issue.githubIssueNumber)">
               {{ issue.starred ? '★' : '☆' }}
             </button>
-            <router-link :to="`/${org}/${repository}/issues/` + issue.id"
+            <router-link :to="`/${org}/${repository}/issues/` + issue.githubIssueNumber"
                          class="text-base font-bold text-black-500 hover:text-blue-800 overflow-hidden text-ellipsis">
               {{ issue.title }}
             </router-link>
@@ -120,7 +120,11 @@ export default defineComponent({
           }
         });
         const data = response.data;
-        issues.value = data.issues;
+        issues.value = data.issues.map(issue => ({
+          ...issue,
+          id: issue.id,
+          githubIssueNumber: issue.githubIssueNumber,
+        }));
         currentPage.value = data.currentPage;
         totalElements.value = data.totalElements;
         totalPages.value = data.totalPages;
@@ -149,12 +153,12 @@ export default defineComponent({
       fetchIssues();
     };
 
-    const toggleStar = async (id) => {
+    const toggleStar = async (githubIssueNumber) => {
       try {
-        const issue = issues.value.find(i => i.id === id);
+        const issue = issues.value.find(i => i.githubIssueNumber === githubIssueNumber);
         if (!issue) return;
 
-        await axios.put(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star/${issue.githubIssueId}`, {}, {
+        await axios.put(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star/${githubIssueNumber}`, {}, {
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
           }
@@ -168,14 +172,22 @@ export default defineComponent({
 
     const formatDate = (dateString) => {
       if (!dateString) return {date: 'N/A', time: 'N/A'};
-      const date = new Date(dateString);
+
+      const date = new Date(new Date(dateString).getTime() + 9 * 60 * 60 * 1000);
+
       return {
         date: date.toLocaleDateString('ko-KR', {
           year: 'numeric',
           month: '2-digit',
-          day: '2-digit'
+          day: '2-digit',
+          timeZone: 'Asia/Seoul'
         }).replace(/\. /g, '.'),
-        time: date.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit', hour12: false})
+        time: date.toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Seoul'
+        })
       };
     };
 
