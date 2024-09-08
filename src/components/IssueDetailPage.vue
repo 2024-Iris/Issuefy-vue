@@ -132,11 +132,13 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .markdown-body {
   font-size: 15px;
   line-height: 1.5;
   word-wrap: break-word;
+  background-color: white !important;
+  color: #333 !important;
 }
 
 @media (max-width: 767px) {
@@ -147,6 +149,21 @@ export default {
 
 .markdown-body pre {
   white-space: pre-wrap;
+  background-color: #f6f8fa !important;
+  border-radius: 6px;
+  padding: 16px;
 }
 
+.markdown-body code {
+  background-color: #f6f8fa !important;
+  color: #24292e !important;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+.markdown-body pre code {
+  background-color: transparent !important;
+  padding: 0;
+  border-radius: 0;
+}
 </style>
