@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="flex-1 text-center px-3 border-r border-gray-200 last:border-r-0">
-        <p class="text-base font-semibold text-black mb-2">주간 방문 횟수</p>
+        <p class="text-base font-semibold text- mb-2">주간 방문 횟수</p>
         <div class="h-16 flex items-center justify-center">
           <h2 class="text-5xl font-bold leading-none text-gray-800">{{ stats.visitCount }}</h2>
         </div>
@@ -60,22 +60,22 @@ fetchData();
 
 const rankBorderClass = computed(() => {
   const classes = {
-    'S': 'border-t-4 border-t-blue-500',
-    'A': 'border-t-4 border-t-blue-400',
+    'S': 'border-t-4 border-t-red-500',
+    'A': 'border-t-4 border-t-blue-500',
     'B': 'border-t-4 border-t-indigo-400',
     'C': 'border-t-4 border-t-purple-400',
-    'D': 'border-t-4 border-t-purple-500'
+    'D': 'border-t-4 border-t-teal-500'
   };
   return classes[stats.value.rank] || '';
 });
 
 const rankTextClass = computed(() => {
   const classes = {
-    'S': 'text-blue-500',
-    'A': 'text-blue-400',
+    'S': 'text-red-500',
+    'A': 'text-blue-500',
     'B': 'text-indigo-400',
     'C': 'text-purple-400',
-    'D': 'text-purple-500'
+    'D': 'text-teal-500'
   };
   return classes[stats.value.rank] || 'text-gray-800';
 });
