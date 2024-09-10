@@ -84,7 +84,7 @@ export default defineComponent({
 
     const fetchIssues = async () => {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star`, {
+        const response = await axios.get(`${process.env.VUE_APP_API_URL}/subscriptions/issue-star`, {
           params: {
             page: currentPage.value
           },
@@ -110,7 +110,7 @@ export default defineComponent({
         const issue = issues.value.find(i => i.id === id);
         if (!issue) return;
 
-        await axios.put(`${process.env.VUE_APP_API_URL}/subscriptions/issue_star/${issue.githubIssueId}`, {}, {
+        await axios.put(`${process.env.VUE_APP_API_URL}/subscriptions/issue-star/${issue.githubIssueId}`, {}, {
           headers: {
             Authorization: `Bearer ${authStore.accessToken}`
           }
