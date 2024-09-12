@@ -1,107 +1,125 @@
 <template>
-  <header v-if="!$route.meta.hideHeader" class="bg-white">
-    <nav aria-label="Global" class="flex w-full items-center justify-between py-4 px-4 bg-gray-50 flex-wrap">
-      <div class="flex items-center flex-grow">
-        <router-link class="flex items-center" to="/">
-          <img alt="issuefy logo" class="h-16 w-auto" src="./assets/issuefy-removebg_logo.png"/>
-        </router-link>
-        <div v-if="$route.meta.showBreadcrumbs" class="ml-4 flex items-center space-x-2">
-          <span class="text-sm font-medium text-gray-900">{{ $route.params.org }}</span>
-          <span class="text-sm font-medium text-gray-500">/</span>
-          <router-link
-              :to="`/${$route.params.org}/${$route.params.repository}/issues`"
-              class="text-sm font-medium text-gray-900 hover:text-blue-600"
-          >
-            {{ $route.params.repository }}
+  <div id="app">
+    <header v-if="!$route.meta.hideHeader" class="bg-white">
+      <nav aria-label="Global" class="flex w-full items-center justify-between py-4 px-4 bg-gray-50 flex-wrap">
+        <div class="flex items-center flex-grow">
+          <router-link class="flex items-center" to="/">
+            <img alt="issuefy logo" class="h-16 w-auto" src="./assets/issuefy-removebg_logo.png"/>
           </router-link>
-        </div>
-      </div>
-      <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap">
-        <div class="relative mr-2">
-          <button class="relative" @click="toggleNotifications">
-            <font-awesome-icon icon="bell" style="color: #B197FC; font-size: 1.25rem;"/>
-            <span
-                v-if="unreadCount > 0"
-                class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1"
+          <div v-if="$route.meta.showBreadcrumbs" class="ml-4 flex items-center space-x-2">
+            <span class="text-sm font-medium text-gray-900">{{ $route.params.org }}</span>
+            <span class="text-sm font-medium text-gray-500">/</span>
+            <router-link
+                :to="`/${$route.params.org}/${$route.params.repository}/issues`"
+                class="text-sm font-medium text-gray-900 hover:text-blue-600"
             >
-              {{ unreadCount }}
-            </span>
-          </button>
-          <div
-              v-if="showNotifications"
-              v-click-outside="closeNotifications"
-              class="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto"
-          >
-            <div v-if="visibleNotifications.length > 0">
-              <div
-                  v-for="notification in visibleNotifications"
-                  :key="notification.userNotificationId"
-                  :class="['p-3 border-b border-gray-200', {'bg-gray-50': !notification.read}]"
+              {{ $route.params.repository }}
+            </router-link>
+          </div>
+        </div>
+        <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap">
+          <div class="relative mr-2">
+            <button class="relative" @click="toggleNotifications">
+              <font-awesome-icon icon="bell" style="color: #B197FC; font-size: 1.25rem;"/>
+              <span
+                  v-if="unreadCount > 0"
+                  class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1"
               >
-                <div class="flex flex-col">
-                  <div class="flex justify-between items-start mb-2">
-                    <span :class="{'font-semibold': !notification.read}" class="mr-2">
-                      <span>새로운 이슈가 추가되었어요!</span>
-                      <router-link
-                          :to="`/${notification.orgName}/${notification.repositoryName}/issues`"
-                          class="text-purple-500 hover:text-purple-700"
+                {{ unreadCount }}
+              </span>
+            </button>
+            <div
+                v-if="showNotifications"
+                v-click-outside="closeNotifications"
+                class="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+            >
+              <div v-if="visibleNotifications.length > 0">
+                <div
+                    v-for="notification in visibleNotifications"
+                    :key="notification.userNotificationId"
+                    :class="['p-3 border-b border-gray-200', {'bg-gray-50': !notification.read}]"
+                >
+                  <div class="flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                      <span :class="{'font-semibold': !notification.read}" class="mr-2">
+                        <span>새로운 이슈가 추가되었어요!</span>
+                        <router-link
+                            :to="`/${notification.orgName}/${notification.repositoryName}/issues`"
+                            class="text-purple-500 hover:text-purple-700"
+                        >
+                          <div>
+                            {{ notification.orgName + ' / ' + notification.repositoryName }}
+                          </div>
+                        </router-link>
+                      </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-xs text-gray-500">{{ notification.formattedTime }}</span>
+                      <button
+                          v-if="!notification.read"
+                          class="text-xs text-purple-500 hover:text-purple-700"
+                          @click="markAsRead(notification.userNotificationId)"
                       >
-                        <div>
-                          {{ notification.orgName + ' / ' + notification.repositoryName }}
-                        </div>
-                      </router-link>
-                    </span>
-                  </div>
-                  <div class="flex justify-between items-center">
-                    <span class="text-xs text-gray-500">{{ notification.formattedTime }}</span>
-                    <button
-                        v-if="!notification.read"
-                        class="text-xs text-purple-500 hover:text-purple-700"
-                        @click="markAsRead(notification.userNotificationId)"
-                    >
-                      읽음
-                    </button>
+                        읽음
+                      </button>
+                    </div>
                   </div>
                 </div>
+                <div v-if="notifications.length > visibleNotifications.length" class="p-2 text-center">
+                  <button class="text-purple-500 hover:text-purple-700" @click.stop="loadMoreNotifications">
+                    더 보기
+                  </button>
+                </div>
               </div>
-              <div v-if="notifications.length > visibleNotifications.length" class="p-2 text-center">
-                <button class="text-purple-500 hover:text-purple-700" @click.stop="loadMoreNotifications">
-                  더 보기
+              <div v-else class="p-4 text-gray-500">
+                알림이 없습니다.
+              </div>
+              <div v-if="hasUnreadNotifications" class="p-2 border-t border-gray-200">
+                <button class="w-full text-center text-purple-500 hover:text-purple-700" @click="markAllAsRead">
+                  모두 읽음
                 </button>
               </div>
             </div>
-            <div v-else class="p-4 text-gray-500">
-              알림이 없습니다.
-            </div>
-            <div v-if="hasUnreadNotifications" class="p-2 border-t border-gray-200">
-              <button class="w-full text-center text-purple-500 hover:text-purple-700" @click="markAllAsRead">
-                모두 읽음
-              </button>
-            </div>
           </div>
-        </div>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/">
-          Home
-        </router-link>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/repositories">
-          Repositories
-        </router-link>
-      </div>
-      <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap ml-4">
-        <div class="flex items-center space-x-2">
-          <img :src="avatarURL" alt="User Avatar" class="w-10 h-10 rounded-full">
-          <router-link class="text-sm font-semibold leading-6 text-blue-600 hover:underline" to="/settings">
-            {{ userName }}
+          <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/">
+            Home
+          </router-link>
+          <router-link class="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 p-2" to="/repositories">
+            Repositories
           </router-link>
         </div>
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Logout</router-link>
+        <div v-if="isLoggedIn" class="flex items-center gap-x-2 flex-wrap ml-4">
+          <div class="flex items-center space-x-2">
+            <img :src="avatarURL" alt="User Avatar" class="w-10 h-10 rounded-full">
+            <router-link class="text-sm font-semibold leading-6 text-blue-600 hover:underline" to="/settings">
+              {{ userName }}
+            </router-link>
+          </div>
+          <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/logout">Logout</router-link>
+        </div>
+        <div v-else class="flex justify-end">
+          <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/login">Login</router-link>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <router-view></router-view>
+    </main>
+    <footer class="bg-gray-100 mt-auto">
+      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+          <div class="text-gray-500 text-sm">
+            © 2024 Issuefy. All rights reserved.
+          </div>
+          <div class="flex space-x-6">
+            <a href="#" class="text-gray-500 hover:text-gray-900">About</a>
+            <a href="#" class="text-gray-500 hover:text-gray-900">Privacy</a>
+            <a href="#" class="text-gray-500 hover:text-gray-900">Terms</a>
+          </div>
+        </div>
       </div>
-      <div v-else class="flex justify-end">
-        <router-link class="text-sm font-semibold leading-6 text-gray-900" to="/login">Login</router-link>
-      </div>
-    </nav>
-  </header>
-  <router-view></router-view>
+    </footer>
+  </div>
 </template>
 
 <script>
@@ -326,3 +344,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+</style>
