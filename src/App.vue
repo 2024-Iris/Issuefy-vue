@@ -105,16 +105,17 @@
     <main>
       <router-view></router-view>
     </main>
-    <footer class="bg-gray-100 mt-auto">
-      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <footer class="bg-gray-50 mt-auto">
+      <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
           <div class="text-gray-500 text-sm">
             © 2024 Issuefy. All rights reserved.
           </div>
-          <div class="flex space-x-6">
-            <a href="#" class="text-gray-500 hover:text-gray-900">About</a>
-            <a href="#" class="text-gray-500 hover:text-gray-900">Privacy</a>
-            <a href="#" class="text-gray-500 hover:text-gray-900">Terms</a>
+          <div class="flex space-x-6 items-center">
+            <a href="https://github.com/2024-Iris" target="_blank" rel="noopener noreferrer"
+               class="text-gray-500 hover:text-gray-900">About</a>
+            <a href="mailto:2024irisproject@gmail.com" rel="noopener noreferrer"
+               class="text-gray-500 hover:text-gray-900">Feedback</a>
           </div>
         </div>
       </div>
