@@ -112,10 +112,10 @@
             © 2024 Issuefy. All rights reserved.
           </div>
           <div class="flex space-x-6 items-center">
-            <a href="https://github.com/2024-Iris" target="_blank" rel="noopener noreferrer"
-               class="text-gray-500 hover:text-gray-900">About</a>
-            <a href="mailto:2024irisproject@gmail.com" rel="noopener noreferrer"
-               class="text-gray-500 hover:text-gray-900">Feedback</a>
+            <a class="text-gray-500 hover:text-gray-900" href="https://github.com/2024-Iris" rel="noopener noreferrer"
+               target="_blank">About</a>
+            <a class="text-gray-500 hover:text-gray-900" href="mailto:2024irisproject@gmail.com"
+               rel="noopener noreferrer">Feedback</a>
           </div>
         </div>
       </div>

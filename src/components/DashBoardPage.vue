@@ -30,9 +30,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import {computed, ref} from 'vue';
 import axios from 'axios';
-import { useAuthStore } from "@/store/pinia";
+import {useAuthStore} from "@/store/pinia";
 
 const authStore = useAuthStore();
 const stats = ref({
